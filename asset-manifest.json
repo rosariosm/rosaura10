@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/rosaura10/static/css/main.31761ff2.chunk.css",
+    "main.js": "/rosaura10/static/js/main.c13a4c79.chunk.js",
+    "main.js.map": "/rosaura10/static/js/main.c13a4c79.chunk.js.map",
+    "runtime-main.js": "/rosaura10/static/js/runtime-main.bda81300.js",
+    "runtime-main.js.map": "/rosaura10/static/js/runtime-main.bda81300.js.map",
+    "static/js/2.662dfaf3.chunk.js": "/rosaura10/static/js/2.662dfaf3.chunk.js",
+    "static/js/2.662dfaf3.chunk.js.map": "/rosaura10/static/js/2.662dfaf3.chunk.js.map",
+    "static/js/3.81e93b28.chunk.js": "/rosaura10/static/js/3.81e93b28.chunk.js",
+    "static/js/3.81e93b28.chunk.js.map": "/rosaura10/static/js/3.81e93b28.chunk.js.map",
+    "index.html": "/rosaura10/index.html",
+    "static/css/main.31761ff2.chunk.css.map": "/rosaura10/static/css/main.31761ff2.chunk.css.map",
+    "static/js/2.662dfaf3.chunk.js.LICENSE.txt": "/rosaura10/static/js/2.662dfaf3.chunk.js.LICENSE.txt",
+    "static/media/clouds.7b2f6ee2.jpg": "/rosaura10/static/media/clouds.7b2f6ee2.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.bda81300.js",
+    "static/js/2.662dfaf3.chunk.js",
+    "static/css/main.31761ff2.chunk.css",
+    "static/js/main.c13a4c79.chunk.js"
+  ]
+}
