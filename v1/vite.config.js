@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+import { devVersionRedirect } from "../scripts/dev-version-redirect.mjs";
+
 // The base only applies to builds, where it has to match the GitHub Pages URL
 // (https://rosariosm.github.io/rosaura10/v1/). In dev the app is served from
 // the root instead, so local URLs stay short and there is no way to end up on
@@ -8,7 +10,7 @@ import react from "@vitejs/plugin-react";
 // with the real prefix.
 export default defineConfig(({ command }) => ({
   base: command === "build" ? "/rosaura10/v1/" : "/",
-  plugins: [react()],
+  plugins: [react(), devVersionRedirect()],
   // No client-side routing here, so skip the SPA fallback: an unknown path
   // should 404 rather than quietly serving this version's page.
   appType: "mpa",
