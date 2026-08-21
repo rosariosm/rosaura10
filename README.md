@@ -25,6 +25,11 @@ Each version has its own fixed port and is served from the root in dev, so both
 can run at once and the URLs stay short. The `/rosaura10/<version>/` prefix only
 exists in builds, where it has to match GitHub Pages.
 
+`dev:v1` and `dev:v2` are separate servers — starting one does not start the
+other, and `:5173` will never serve v2. If you land on a deploy-shaped URL like
+`localhost:5173/rosaura10/v2/`, it redirects to the right port, provided that
+version's server is running.
+
 ## Building
 
 ```sh
