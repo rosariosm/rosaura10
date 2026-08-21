@@ -1,10 +1,11 @@
 // Combines each version's build into one directory for GitHub Pages:
 //   dist/        the hub page, from public/
 //   dist/v1/     the original animation
+//   dist/v2/     the new one
 // Adding a version means building it and listing it in VERSIONS below.
 import { cp, mkdir, rm } from "node:fs/promises";
 
-const VERSIONS = ["v1"];
+const VERSIONS = ["v1", "v2"];
 
 const root = new URL("../", import.meta.url);
 const dist = new URL("dist/", root);
