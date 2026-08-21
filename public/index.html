@@ -1,43 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <title>rosaura10</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0e0e11;
+        --fg: #e9e6e1;
+        --dim: #7b7784;
+        --accent: #ff69b4;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      main { width: 100%; max-width: 34rem; }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+      p.sub { margin: 0 0 2.5rem; color: var(--dim); }
+      ul { list-style: none; margin: 0; padding: 0; }
+      li + li { margin-top: 0.75rem; }
+      a, .soon {
+        display: block;
+        padding: 1rem 1.25rem;
+        border: 1px solid #26242c;
+        border-radius: 6px;
+        text-decoration: none;
+        color: inherit;
+      }
+      a:hover, a:focus-visible {
+        border-color: var(--accent);
+        outline: none;
+      }
+      .label { display: block; }
+      .note { display: block; color: var(--dim); font-size: 0.85rem; }
+      .soon { color: var(--dim); border-style: dashed; }
+    </style>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <main>
+      <h1>rosaura10</h1>
+      <p class="sub">three.js things, in versions.</p>
+      <ul>
+        <li>
+          <a href="./v1/">
+            <span class="label">v1 &middot; pa que te voy a decir que no si sí</span>
+            <span class="note">the original. boxes, and text in the clouds.</span>
+          </a>
+        </li>
+        <li>
+          <span class="soon">
+            <span class="label">v2</span>
+            <span class="note">not yet.</span>
+          </span>
+        </li>
+      </ul>
+    </main>
   </body>
 </html>
