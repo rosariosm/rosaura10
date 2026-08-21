@@ -3,7 +3,7 @@
 three.js things, in versions. Each version is its own small app; they are built together and deployed as one site.
 
 - **v1** — *Pa que te voy a decir que no si sí*. The original: two boxes you can hover and click, and cloud-textured text tumbling through the scene. Made just to have fun 'u'.
-- **v2** — not yet.
+- **v2** — the new one. Currently a placeholder scene: a wireframe cube and a hello world.
 
 Live at **https://rosariosm.github.io/rosaura10/**
 
@@ -18,9 +18,10 @@ v1 originally ran on Node 14 with create-react-app. It was ported to Vite and cu
 ```sh
 npm install     # installs every version, via workspaces
 npm run dev:v1  # http://localhost:5173/rosaura10/v1/
+npm run dev:v2  # http://localhost:5173/rosaura10/v2/
 ```
 
-The dev URL includes the `/rosaura10/v1/` path because the base is set to match where GitHub Pages serves it from.
+The dev URL includes the version's path because each app's base is set to match where GitHub Pages serves it from. Run one at a time, or pass `--port` to run both.
 
 ## Building
 
@@ -34,7 +35,8 @@ npm run serve   # serve dist/ locally
 ```
 dist/
 ├── index.html   the hub page (from public/)
-└── v1/          the built animation
+├── v1/          the original animation
+└── v2/          the new one
 ```
 
 Note that `npm run serve` serves `dist/` at the server root, while the built assets expect a `/rosaura10/` prefix. To check the real thing locally, copy `dist` into a folder named `rosaura10` and serve its parent.
@@ -45,7 +47,8 @@ Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and pu
 
 ## Adding a version
 
-1. Create `v2/` as its own Vite app, with `base: "/rosaura10/v2/"` in its `vite.config.js`.
-2. Add `"v2"` to `workspaces` in the root `package.json`, and a `dev:v2` script.
-3. Add `"v2"` to `VERSIONS` in `scripts/assemble.mjs`.
-4. Swap the placeholder entry in `public/index.html` for a real link.
+1. Create `v3/` as its own Vite app, with `base: "/rosaura10/v3/"` in its `vite.config.js`.
+2. Add `"v3"` to `workspaces` in the root `package.json`, plus a `dev:v3` script. The
+   root `build` script uses `--workspaces`, so it picks the new app up on its own.
+3. Add `"v3"` to `VERSIONS` in `scripts/assemble.mjs`.
+4. Add an entry to the list in `public/index.html`.
