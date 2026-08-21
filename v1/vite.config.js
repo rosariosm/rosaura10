@@ -6,4 +6,7 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "/rosaura10/v1/",
   plugins: [react()],
+  // Each version owns a port so they can run side by side, and strictPort
+  // makes a clash fail loudly instead of silently landing on another app.
+  server: { port: 5173, strictPort: true },
 });

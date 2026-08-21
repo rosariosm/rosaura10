@@ -18,10 +18,16 @@ v1 originally ran on Node 14 with create-react-app. It was ported to Vite and cu
 ```sh
 npm install     # installs every version, via workspaces
 npm run dev:v1  # http://localhost:5173/rosaura10/v1/
-npm run dev:v2  # http://localhost:5173/rosaura10/v2/
+npm run dev:v2  # http://localhost:5174/rosaura10/v2/
 ```
 
-The dev URL includes the version's path because each app's base is set to match where GitHub Pages serves it from. Run one at a time, or pass `--port` to run both.
+Each version has its own fixed port, so both can run at once. The dev URL also
+includes the version's path, because each app's `base` matches where GitHub Pages
+serves it from — dev and production resolve assets the same way.
+
+Vite prints the full URL on start; use that rather than typing one. Visiting a
+path on the wrong port gives you a "server is configured with a public base URL
+of ..." error, which means that port belongs to the other version.
 
 ## Building
 
