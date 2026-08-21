@@ -17,23 +17,19 @@ v1 originally ran on Node 14 with create-react-app. It was ported to Vite and cu
 
 ```sh
 npm install     # installs every version, via workspaces
-npm run dev:v1  # http://localhost:5173/rosaura10/v1/
-npm run dev:v2  # http://localhost:5174/rosaura10/v2/
+npm run dev:v1  # http://localhost:5173/
+npm run dev:v2  # http://localhost:5174/
 ```
 
-Each version has its own fixed port, so both can run at once. The dev URL also
-includes the version's path, because each app's `base` matches where GitHub Pages
-serves it from — dev and production resolve assets the same way.
-
-Vite prints the full URL on start; use that rather than typing one. Visiting a
-path on the wrong port gives you a "server is configured with a public base URL
-of ..." error, which means that port belongs to the other version.
+Each version has its own fixed port and is served from the root in dev, so both
+can run at once and the URLs stay short. The `/rosaura10/<version>/` prefix only
+exists in builds, where it has to match GitHub Pages.
 
 ## Building
 
 ```sh
 npm run build   # builds each version, then assembles dist/
-npm run serve   # serve dist/ locally
+npm run serve   # preview at http://localhost:4173/rosaura10/
 ```
 
 `npm run build` produces:
@@ -45,7 +41,9 @@ dist/
 └── v2/          the new one
 ```
 
-Note that `npm run serve` serves `dist/` at the server root, while the built assets expect a `/rosaura10/` prefix. To check the real thing locally, copy `dist` into a folder named `rosaura10` and serve its parent.
+`npm run serve` mounts `dist/` under `/rosaura10/`, exactly as Pages does. Because
+the dev servers run at the root instead, this preview is the only local check that
+the built base paths are correct — worth running before you push anything.
 
 ## Deploying
 

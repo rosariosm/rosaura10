@@ -11,7 +11,7 @@
     "dev": "npm run dev --workspace rosaura10-v1",
     "dev:v1": "npm run dev --workspace rosaura10-v1",
     "build": "npm run build --workspaces && node scripts/assemble.mjs",
-    "serve": "npx --yes serve dist",
+    "serve": "node scripts/serve.mjs",
     "dev:v2": "npm run dev --workspace rosaura10-v2"
   },
   "engines": {
