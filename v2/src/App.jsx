@@ -1,12 +1,8 @@
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 
-// Deployed path of the other version. It also works in dev: the dev server
-// redirects /rosaura10/<version>/ to whichever port that version runs on.
 const V1 = "/rosaura10/v1/";
 
-// Placeholder scene. Enough to prove the stack works end to end, and small
-// enough to delete without regret once v2 is actually about something.
 const Cube = () => {
   const mesh = useRef();
 

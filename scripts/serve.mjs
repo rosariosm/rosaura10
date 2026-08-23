@@ -1,6 +1,3 @@
-// Previews dist/ the way GitHub Pages serves it, under the /rosaura10/ prefix.
-// Dev servers run at the root, so this is the only local check that the built
-// base paths are right. Run `npm run build` first.
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -36,7 +33,6 @@ createServer(async (req, res) => {
     return res.end();
   }
 
-  // Strip the prefix, then resolve inside dist without escaping it.
   const rel = normalize(pathname.slice(PREFIX.length)).replace(/^(\.\.[/\\])+/, "");
   let file = join(DIST, rel);
 

@@ -7,8 +7,6 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import Kumar from "../fonts/kumar.json";
 import cloudsUrl from "../textures/clouds.jpg";
 
-// TextGeometry left three's core in r147, so react-three-fiber only knows the
-// <textGeometry> element once the class is added to its catalogue.
 extend({ TextGeometry });
 
 const Text = () => {
@@ -21,8 +19,6 @@ const Text = () => {
     mesh.current.geometry.center();
   });
 
-  // Parsing the font builds every glyph outline, so do it once rather than on
-  // each render. `depth` is what r163 renamed the old `height` option to.
   const textOptions = useMemo(
     () => ({ font: new FontLoader().parse(Kumar), size: 1, depth: 1 }),
     []
