@@ -30,6 +30,8 @@ Exactly four sections, in this order, **one or two lines each — never more**:
 - `## How` — the approach, briefly
 - `## Notes` — anything the reviewer needs to know, or omit if there is nothing
 
+The template lives in `.github/pull_request_template.md`.
+
 **Never mention Claude, AI, or any assistant in a PR title or description.**
 
 Titles follow the same Conventional Commits format as commits.
