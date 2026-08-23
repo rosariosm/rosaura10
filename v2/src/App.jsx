@@ -34,8 +34,8 @@ const App = () => (
       <h1>v2</h1>
       <p>hello world.</p>
     </div>
-    <a className="version-link" href={V1}>
-      old works john
+    <a className="version-link" href={V1} lang="es">
+      Lo viejo funciona Juan
     </a>
   </>
 );
