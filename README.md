@@ -6,13 +6,13 @@ God save bad taste.
 
 ## Why
 
-I always wanted to use three.js but never did, because I never finish anything — I only have a lot of dreams that go nowhere.
+I always wanted to use three.js but never did, because I never finish anything. I only have a lot of dreams that go nowhere.
 
-I also love the 1995 internet style. Or better: I love when things are still being made, when there is chaos and nobody knows the real direction.
+I also love the 1995 internet style, and everything related to 🌈 *graphic design is my passion* 🌈 — check out [this beauty](https://www.webdesignmuseum.org/gallery/jackie-chans-official-home-page-in-1995). I love when things are still being made, when there is chaos and nobody knows the real direction.
 
 Both are the why of this project: I want to travel back to when the internet was a place to be super curious and do whatever.
 
-## AI version: rosaura10
+## The boring part
 
 three.js things, in versions. Each version is its own small app; they are built together and deployed as one site.
 
