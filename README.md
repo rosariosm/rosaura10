@@ -1,5 +1,19 @@
 # rosaura10
 
+This is a personal project where I don't want to follow any rule, convention, or good practice. I just want to create something freely, following my gut and my bad taste.
+
+God save bad taste.
+
+## Why
+
+I always wanted to use three.js but never did, because I never finish anything — I only have a lot of dreams that go nowhere.
+
+I also love the 1995 internet style. Or better: I love when things are still being made, when there is chaos and nobody knows the real direction.
+
+Both are the why of this project: I want to travel back to when the internet was a place to be super curious and do whatever.
+
+## AI version: rosaura10
+
 three.js things, in versions. Each version is its own small app; they are built together and deployed as one site.
 
 - **v1** — *Pa que te voy a decir que no si sí*. The original: two boxes you can hover and click, and cloud-textured text tumbling through the scene. Made just to have fun 'u'.
@@ -25,11 +39,6 @@ Each version has its own fixed port and is served from the root in dev, so both
 can run at once and the URLs stay short. The `/rosaura10/<version>/` prefix only
 exists in builds, where it has to match GitHub Pages.
 
-`dev:v1` and `dev:v2` are separate servers — starting one does not start the
-other, and `:5173` will never serve v2. If you land on a deploy-shaped URL like
-`localhost:5173/rosaura10/v2/`, it redirects to the right port, provided that
-version's server is running.
-
 ## Building
 
 ```sh
@@ -53,11 +62,3 @@ the built base paths are correct — worth running before you push anything.
 ## Deploying
 
 Pushing to `master` triggers `.github/workflows/deploy.yml`, which builds and publishes to GitHub Pages. **This requires Settings → Pages → Source to be set to "GitHub Actions"** — deploys fail until that is done, and it cannot be set from the workflow.
-
-## Adding a version
-
-1. Create `v3/` as its own Vite app, with `base: "/rosaura10/v3/"` in its `vite.config.js`.
-2. Add `"v3"` to `workspaces` in the root `package.json`, plus a `dev:v3` script. The
-   root `build` script uses `--workspaces`, so it picks the new app up on its own.
-3. Add `"v3"` to `VERSIONS` in `scripts/assemble.mjs`.
-4. Add an entry to the list in `public/index.html`.
