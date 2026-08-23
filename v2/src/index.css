@@ -39,3 +39,21 @@ body {
   color: #7b7784;
   font-size: 0.9rem;
 }
+
+.version-link {
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #26242c;
+  color: #7b7784;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.version-link:hover,
+.version-link:focus-visible {
+  border-bottom-color: hotpink;
+  color: #e9e6e1;
+  outline: none;
+}
