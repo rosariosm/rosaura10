@@ -4,6 +4,14 @@ Personal project. Read `README.md` first — the intro sets the tone, and it is
 deliberate: no rules, no conventions, no good practices. The rules below are the
 exception, and they are about process, not about the work itself.
 
+## Comments
+
+**Do not write comments.** Not in JavaScript, JSX, CSS, YAML, or config files.
+Only add a comment when explicitly asked for one, and only where asked.
+
+If something needs explaining, say it in the commit message, the PR description,
+or `README.md` — not in the source.
+
 ## Commits
 
 Use Conventional Commits: `type(scope): description`, imperative mood, lowercase

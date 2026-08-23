@@ -1,7 +1,3 @@
-// In dev each version is served from its own port root, but the deployed site
-// uses /rosaura10/<version>/ paths. Bookmarks and habit produce the deployed
-// shape locally, which would otherwise 404 on whichever server you happened to
-// hit. Bounce those to the right port instead.
 const PORTS = { v1: 5173, v2: 5174 };
 
 export const devVersionRedirect = () => ({
