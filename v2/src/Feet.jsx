@@ -15,6 +15,8 @@ const url = (file) => urls[`./feet/${file}`];
 
 const INK = "#e9e6e1";
 const HEIGHT = 6;
+const DISTANCE = 6;
+const FOV = 75;
 
 const Hair = ({ hair, scale, texture, origin }) => {
   const pivot = useRef();
@@ -73,9 +75,18 @@ const Foot = ({ name, meta, position }) => {
   );
 };
 
-const Feet = () => {
-  const { viewport } = useThree();
-  const fit = Math.min(1, viewport.width / 10, viewport.height / 7.5);
+const Feet = ({ zoom }) => {
+  const size = useThree((state) => state.size);
+  const height = 2 * DISTANCE * Math.tan((FOV / 2) * (Math.PI / 180));
+  const width = (height * size.width) / size.height;
+  const fit = Math.min(1, width / 10, height / 7.5);
+  const smooth = useRef(0);
+
+  useFrame(({ camera }, delta) => {
+    smooth.current += (zoom.current - smooth.current) * Math.min(1, delta * 8);
+    const p = smooth.current ** 2;
+    camera.position.set(0, 0, DISTANCE - 5 * p);
+  });
 
   return (
     <group scale={fit} position={[0, 0.2, 0]}>

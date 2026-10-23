@@ -3,22 +3,26 @@
 }
 
 html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
+body {
   margin: 0;
   padding: 0;
 }
 
 body {
-  background: #0e0e11;
+  background: #000;
   color: #e9e6e1;
   font: 16px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-x: hidden;
 }
 
-#root {
+.hero {
   position: relative;
+  height: 100vh;
+}
+
+.hero-inner {
+  position: absolute;
+  inset: 0;
 }
 
 .overlay {
@@ -40,8 +44,81 @@ body {
   font-size: 0.9rem;
 }
 
-.version-link {
+.hint {
   position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  margin: 0;
+  color: #7b7784;
+  animation: bob 1.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(0.5rem);
+  }
+}
+
+.gallery {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.painting {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.frame {
+  width: min(88vw, 86vh / 1.45);
+  overflow: hidden;
+  will-change: opacity;
+}
+
+.art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.field-hair {
+  position: absolute;
+  mix-blend-mode: screen;
+}
+
+.outro {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: #7b7784;
+  text-align: center;
+}
+
+.footer-fade {
+  position: fixed;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: min(100vw, 26rem);
+  height: 9rem;
+  background: radial-gradient(farthest-side at 100% 100%, #000 55%, transparent);
+  pointer-events: none;
+}
+
+.version-link {
+  position: fixed;
+  z-index: 2;
   right: 2rem;
   bottom: 2rem;
   padding-bottom: 2px;

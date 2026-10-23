@@ -17,7 +17,7 @@ Both are the why of this project: I want to travel back to when the internet was
 three.js things, in versions. Each version is its own small app; they are built together and deployed as one site.
 
 - **v1** — *Pa que te voy a decir que no si sí*. The original: two boxes you can hover and click, and cloud-textured text tumbling through the scene. Made just to have fun 'u'.
-- **v2** — *mis pelos*. Two ink drawings of my feet, cut out of a sketchbook photo; every leg hair is its own sprite that sways on its own and bristles when the cursor gets close.
+- **v2** — *mis pelos*. Two ink drawings of my feet, cut out of a sketchbook photo; every leg hair is its own sprite that sways on its own and bristles when the cursor gets close. Scrolling zooms straight into the drawing until it fades out, then crossfades through five ink paintings of hands and feet with a slow zoom, surrounded by dancing hairs that thin out and shrink as they get closer to the painting. Driven by GSAP ScrollTrigger.
 
 Live at **https://rosariosm.github.io/rosaura10/**
 
