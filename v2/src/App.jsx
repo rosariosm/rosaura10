@@ -1,34 +1,20 @@
-import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+
+import Feet from "./Feet";
 
 const V1 = "/rosaura10/v1/";
-
-const Cube = () => {
-  const mesh = useRef();
-
-  useFrame((_, delta) => {
-    mesh.current.rotation.x += delta * 0.4;
-    mesh.current.rotation.y += delta * 0.6;
-  });
-
-  return (
-    <mesh ref={mesh}>
-      <boxGeometry args={[2, 2, 2]} />
-      <meshStandardMaterial color="hotpink" wireframe />
-    </mesh>
-  );
-};
 
 const App = () => (
   <>
     <Canvas camera={{ position: [0, 0, 6] }}>
-      <ambientLight intensity={1.5} />
-      <pointLight position={[10, 10, 10]} decay={0} />
-      <Cube />
+      <Suspense fallback={null}>
+        <Feet />
+      </Suspense>
     </Canvas>
     <div className="overlay">
       <h1>v2</h1>
-      <p>hello world.</p>
+      <p lang="es">mis pelos.</p>
     </div>
     <a className="version-link" href={V1} lang="es">
       Lo viejo funciona Juan

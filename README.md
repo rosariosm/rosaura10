@@ -17,7 +17,7 @@ Both are the why of this project: I want to travel back to when the internet was
 three.js things, in versions. Each version is its own small app; they are built together and deployed as one site.
 
 - **v1** — *Pa que te voy a decir que no si sí*. The original: two boxes you can hover and click, and cloud-textured text tumbling through the scene. Made just to have fun 'u'.
-- **v2** — the new one. Currently a placeholder scene: a wireframe cube and a hello world.
+- **v2** — *mis pelos*. Two ink drawings of my feet, cut out of a sketchbook photo; every leg hair is its own sprite that sways on its own and bristles when the cursor gets close.
 
 Live at **https://rosariosm.github.io/rosaura10/**
 
