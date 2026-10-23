@@ -53,7 +53,6 @@ const Gallery = () => {
 
   return (
     <section className="gallery" ref={root}>
-      <HairField />
       {paintings.map((src) => (
         <div className="painting" key={src}>
           <div className="frame">
@@ -63,6 +62,7 @@ const Gallery = () => {
           </div>
         </div>
       ))}
+      <HairField />
       <p className="outro" lang="es">
         <span>
           no sé qué estoy haciendo de mi vida

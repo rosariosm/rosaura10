@@ -8,32 +8,42 @@ const urls = import.meta.glob("./feet/*-hair-*.png", { eager: true, import: "def
 
 const sprites = [...pie1.hairs, ...pie2.hairs].filter((hair) => Math.max(hair.w, hair.h) >= 22);
 
-const CELL = 85;
-const SIZE = 1.4;
 const FALLOFF = 380;
 
 const frameRect = (vw, vh) => {
   const w = Math.min(vw * 0.88, (vh * 0.86) / 1.45);
   const h = w * 1.45;
-  return { x0: (vw - w) / 2, y0: (vh - h) / 2, x1: (vw + w) / 2, y1: (vh + h) / 2 };
+  const rect = { x0: (vw - w) / 2, y0: (vh - h) / 2, x1: (vw + w) / 2, y1: (vh + h) / 2 };
+  if (rect.x0 > 80) return { ...rect, tight: false };
+  return {
+    x0: rect.x0 + w * 0.26,
+    y0: rect.y0 + h * 0.24,
+    x1: rect.x1 - w * 0.26,
+    y1: rect.y1 - h * 0.24,
+    tight: true,
+  };
 };
 
 const layout = () => {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const f = frameRect(vw, vh);
+  const small = Math.min(vw, vh);
+  const cell = gsap.utils.clamp(30, 85, small / (f.tight ? 10 : 9));
+  const size = gsap.utils.clamp(0.75, 0.9, small / 850) * (f.tight ? 0.81 : 1);
+  const falloff = Math.min(FALLOFF, Math.max(f.x0, f.y0));
   const hairs = [];
 
-  for (let cy = 0; cy < vh; cy += CELL) {
-    for (let cx = 0; cx < vw; cx += CELL) {
-      const x = cx + Math.random() * CELL;
-      const y = cy + Math.random() * CELL;
+  for (let cy = 0; cy < vh; cy += cell) {
+    for (let cx = 0; cx < vw; cx += cell) {
+      const x = cx + Math.random() * cell;
+      const y = cy + Math.random() * cell;
       const dx = Math.max(f.x0 - x, 0, x - f.x1);
       const dy = Math.max(f.y0 - y, 0, y - f.y1);
       const d = Math.hypot(dx, dy);
-      const t = Math.min(1, d / FALLOFF);
-      if (d < 14 || Math.random() > 0.08 + 0.92 * t ** 1.6) continue;
-      const scale = Math.min(1, 0.12 + t ** 0.8);
+      const t = f.tight ? Math.min(1, Math.max(dx / f.x0, dy / f.y0)) : Math.min(1, d / falloff);
+      if (d < 8 || Math.random() > (f.tight ? 0.03 + 0.97 * t ** 2.2 : 0.08 + 0.92 * t ** 1.6)) continue;
+      const scale = size * Math.min(1, 0.15 + t ** 0.8);
       const sprite = sprites[Math.floor(Math.random() * sprites.length)];
       hairs.push({ x, y, scale, sprite, tilt: gsap.utils.random(-70, 70) });
     }
@@ -78,7 +88,7 @@ const HairField = () => {
   return (
     <div className="field" ref={root} aria-hidden="true">
       {hairs.map(({ x, y, scale, sprite }, i) => {
-        const k = SIZE * scale;
+        const k = scale;
         return (
           <img
             key={i}
