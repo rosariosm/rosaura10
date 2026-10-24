@@ -28,15 +28,36 @@ body,
   position: relative;
 }
 
+@font-face {
+  font-family: "DSEG14";
+  src: url("./fonts/DSEG14Classic-BoldItalic.woff2") format("woff2");
+  font-display: swap;
+}
+
 .version-link {
   position: absolute;
   right: 2rem;
   bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem 1rem;
+  max-width: calc(100% - 4rem);
   padding-bottom: 2px;
   border-bottom: 1px solid rgba(26, 26, 26, 0.25);
   color: #1a1a1a;
-  font-size: 0.9rem;
+  font: 0.9rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-decoration: none;
+}
+
+.destination {
+  display: inline-flex;
+  gap: 0.7em;
+  color: #ff7a1a;
+  font: 0.95rem/1 "DSEG14", monospace;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 6px rgba(255, 110, 20, 0.55);
 }
 
 .version-link:hover,
