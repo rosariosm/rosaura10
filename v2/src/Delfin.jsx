@@ -194,7 +194,9 @@ const Delfin = () => {
         <img className="delfin-outro-left" src={arrecife} alt="" />
         <img className="delfin-outro-left delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
         <p lang="es">
-          pasé mucho tiempo jugando a los jueguitos,
+          pasé mucho tiempo
+          <br />
+          jugando a los jueguitos,
           <br />
           teniendo vergüenza al pedo
         </p>
