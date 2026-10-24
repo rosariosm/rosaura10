@@ -26,7 +26,7 @@ const WEEDS = Array.from({ length: 22 }, (_, i) => ({
 }));
 
 const swim = Object.entries(
-  import.meta.glob("./delfin/swim-*.png", { eager: true, import: "default", query: "?url" })
+  import.meta.glob("./delfin/line-*.png", { eager: true, import: "default", query: "?url" })
 )
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, src]) => src);
