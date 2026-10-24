@@ -192,8 +192,14 @@ const Delfin = () => {
       </div>
       <div className="delfin-outro" ref={outro}>
         <img className="delfin-outro-left" src={arrecife} alt="" />
-        <p lang="es">pasé mucho tiempo jugando a los jueguitos y teniendo vergüenza al pedo</p>
+        <img className="delfin-outro-left delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
+        <p lang="es">
+          pasé mucho tiempo jugando a los jueguitos,
+          <br />
+          teniendo vergüenza al pedo
+        </p>
         <img className="delfin-outro-right" src={arrecife} alt="" />
+        <img className="delfin-outro-right delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
       </div>
       <p className="delfin-note" ref={note} lang="es">
         diamante provisorio: espera tu dibujo

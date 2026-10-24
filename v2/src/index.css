@@ -313,7 +313,7 @@ button {
 }
 
 .delfin-outro p {
-  max-width: 22rem;
+  max-width: 30rem;
   margin: 0 1.5rem;
   color: #7b7784;
   text-align: center;
@@ -346,23 +346,33 @@ button {
   font-size: 0.75rem;
 }
 
+.delfin-outro .delfin-outro-small {
+  display: none;
+}
+
 @media (max-aspect-ratio: 3/4) {
-  .delfin-outro {
-    align-items: start;
-    padding-top: 22vh;
-  }
-
   .delfin-outro img {
-    height: 58vh;
+    display: none;
   }
 
-  .delfin-outro-left {
+  .delfin-outro .delfin-outro-small {
+    display: block;
+    bottom: 4.5rem;
+    width: 44vw;
+    height: auto;
+  }
+
+  .delfin-outro p {
+    font-size: 0.78rem;
+  }
+
+  .delfin-outro-left.delfin-outro-small {
     right: auto;
-    left: calc(40vw - 58vh * 2.14);
+    left: 0;
   }
 
-  .delfin-outro-right {
+  .delfin-outro-right.delfin-outro-small {
     left: auto;
-    right: calc(40vw - 58vh * 2.14);
+    right: 0;
   }
 }
