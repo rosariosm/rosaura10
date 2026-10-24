@@ -55,6 +55,13 @@ const Dolphin = ({ frames }) => (
   </div>
 );
 
+const Reef = ({ className, src }) => (
+  <div className={`delfin-outro-reef ${className}`}>
+    <img className="floor-rocks" src={src} alt="" />
+    <img className="floor-corals" src={src} alt="" />
+  </div>
+);
+
 const Delfin = () => {
   const root = useRef();
   const world = useRef();
@@ -218,8 +225,8 @@ const Delfin = () => {
         <Dolphin frames={frames} />
       </div>
       <div className="delfin-outro" ref={outro}>
-        <img className="delfin-outro-left" src={arrecife} alt="" />
-        <img className="delfin-outro-left delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
+        <Reef className="delfin-outro-left" src={arrecife} />
+        <Reef className="delfin-outro-left delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} />
         <p lang="es">
           pasé mucho tiempo
           <br />
@@ -227,8 +234,8 @@ const Delfin = () => {
           <br />
           teniendo vergüenza al pedo
         </p>
-        <img className="delfin-outro-right" src={arrecife} alt="" />
-        <img className="delfin-outro-right delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
+        <Reef className="delfin-outro-right" src={arrecife} />
+        <Reef className="delfin-outro-right delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} />
       </div>
       <p className="delfin-note" ref={note} lang="es">
         diamante provisorio: espera tu dibujo
