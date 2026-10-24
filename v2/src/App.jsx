@@ -1,57 +1,47 @@
-import { Suspense, useLayoutEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import gsap from "gsap";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import Feet from "./Feet";
-import Gallery from "./Gallery";
+import Delfin from "./Delfin";
+import Pelos from "./Pelos";
 
 const V1 = "/rosaura10/v1/";
 
+const PAGES = {
+  pelos: { label: "pelos", Page: Pelos },
+  delfin: { label: "delfín", Page: Delfin },
+};
+
+const fromHash = () => {
+  const key = window.location.hash.slice(1);
+  return key in PAGES ? key : "pelos";
+};
+
 const App = () => {
-  const hero = useRef();
-  const zoom = useRef(0);
+  const [page, setPage] = useState(fromHash);
+
+  useEffect(() => {
+    const onHash = () => setPage(fromHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to(".hero-inner", {
-        opacity: 0,
-        ease: "power3.in",
-        scrollTrigger: {
-          trigger: hero.current,
-          start: "top top",
-          end: "+=130%",
-          scrub: true,
-          pin: true,
-          refreshPriority: 1,
-          onUpdate: (self) => {
-            zoom.current = self.progress;
-          },
-        },
-      });
-    }, hero);
+    window.scrollTo(0, 0);
+    ScrollTrigger.refresh();
+  }, [page]);
 
-    return () => ctx.revert();
-  }, []);
+  const { Page } = PAGES[page];
 
   return (
     <>
-      <section className="hero" ref={hero}>
-        <div className="hero-inner">
-          <Canvas camera={{ position: [0, 0, 6] }}>
-            <Suspense fallback={null}>
-              <Feet zoom={zoom} />
-            </Suspense>
-          </Canvas>
-          <div className="overlay">
-            <h1>v2</h1>
-            <p lang="es">mis pelos.</p>
-          </div>
-          <p className="hint" aria-hidden="true">
-            ↓
-          </p>
-        </div>
-      </section>
-      <Gallery />
+      <nav className="menu" aria-label="secciones">
+        {Object.entries(PAGES).map(([key, { label }]) => (
+          <a key={key} href={`#${key}`} aria-current={key === page ? "page" : undefined}>
+            {label}
+          </a>
+        ))}
+      </nav>
+      <Page key={page} />
       <div className="footer-fade" aria-hidden="true" />
       <a className="version-link" href={V1} lang="es">
         Lo viejo funciona Juan

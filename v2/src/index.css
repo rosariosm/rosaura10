@@ -151,3 +151,93 @@ button {
   color: #e9e6e1;
   outline: none;
 }
+
+.menu {
+  position: fixed;
+  z-index: 3;
+  top: 1.5rem;
+  left: 2rem;
+  display: flex;
+  gap: 1.25rem;
+}
+
+.menu a {
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  color: #7b7784;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.menu a:hover,
+.menu a:focus-visible {
+  color: #e9e6e1;
+  outline: none;
+}
+
+.menu a[aria-current="page"] {
+  border-bottom-color: hotpink;
+  color: #e9e6e1;
+}
+
+.delfin {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.delfin-world {
+  position: absolute;
+  inset: 0 auto 0 0;
+  will-change: transform;
+}
+
+.delfin-floor {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 40vh;
+}
+
+.delfin-surface {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2vh;
+}
+
+.delfin-diamond {
+  position: absolute;
+  width: clamp(40px, 6vw, 80px);
+  perspective: 400px;
+  transform: translateX(-50%);
+}
+
+.delfin-diamond svg {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 0 calc(var(--glow, 0) * 14px) rgba(255, 255, 255, 0.9));
+}
+
+.dolphin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(140px, 22vw, 280px);
+  will-change: transform;
+}
+
+.dolphin-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.delfin-note {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  margin: 0;
+  color: #4a4752;
+  font-size: 0.75rem;
+}
