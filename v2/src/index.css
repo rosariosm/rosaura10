@@ -122,6 +122,17 @@ button {
   text-align: center;
 }
 
+.header-fade {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: min(100vw, 24rem);
+  height: 10rem;
+  background: radial-gradient(farthest-side at 0 0, #000 55%, transparent);
+  pointer-events: none;
+}
+
 .footer-fade {
   position: fixed;
   z-index: 1;

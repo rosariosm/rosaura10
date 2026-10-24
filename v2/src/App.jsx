@@ -35,6 +35,7 @@ const App = () => {
 
   return (
     <>
+      <div className="header-fade" aria-hidden="true" />
       <Menu page={page} />
       <Page key={page} />
       <div className="footer-fade" aria-hidden="true" />
