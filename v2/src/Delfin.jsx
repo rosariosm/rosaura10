@@ -12,9 +12,7 @@ const SURFACE = 34;
 const DEPTH = 62;
 const PEAK = 15;
 const JUMP = [0.42, 0.6];
-const FRAMES = 4;
 const STROKES_PER_SCREEN = 6;
-const TAIL = [-18, -6, 14, -6];
 
 const ROCKS = Array.from({ length: 14 }, (_, i) => ({
   x: i * 30 + ((i * 37) % 17),
@@ -27,25 +25,31 @@ const WEEDS = Array.from({ length: 22 }, (_, i) => ({
   h: 10 + ((i * 23) % 18),
 }));
 
-const Dolphin = ({ frame }) => (
-  <svg className="dolphin-svg" viewBox="0 0 200 80" aria-hidden="true">
-    <path
-      d="M190 40 C175 30 150 24 120 24 L112 8 L100 25 C70 27 45 33 28 40 C45 47 70 53 110 54 C140 55 170 50 190 40 Z"
-      fill="#e9e6e1"
-    />
-    <path d="M120 52 L112 66 L104 53 Z" fill="#e9e6e1" />
-    <g ref={frame} className="dolphin-tail">
-      <path d="M32 40 L6 22 L14 40 L6 58 Z" fill="#e9e6e1" />
-    </g>
-    <circle cx="170" cy="36" r="2.5" fill="#000" />
-  </svg>
+const swim = Object.entries(
+  import.meta.glob("./delfin/swim-*.png", { eager: true, import: "default", query: "?url" })
+)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, src]) => src);
+
+const Dolphin = ({ frames }) => (
+  <div className="dolphin-frames">
+    {swim.map((src, i) => (
+      <img
+        key={src}
+        ref={(el) => (frames.current[i] = el)}
+        src={src}
+        alt=""
+        style={{ visibility: i === 0 ? "visible" : "hidden" }}
+      />
+    ))}
+  </div>
 );
 
 const Delfin = () => {
   const root = useRef();
   const world = useRef();
   const dolphin = useRef();
-  const tail = useRef();
+  const frames = useRef([]);
   const diamond = useRef();
 
   useLayoutEffect(() => {
@@ -91,7 +95,7 @@ const Delfin = () => {
         const dyPx = -(DEPTH - PEAK) * Math.PI * Math.cos(Math.PI * t) * vh();
         const angle = jumping ? (Math.atan2(dyPx, dxPx) * 180) / Math.PI : Math.cos(time * 2.2) * 4;
 
-        const frame = Math.floor(state.travelled / (100 / STROKES_PER_SCREEN / FRAMES)) % FRAMES;
+        const frame = Math.floor(state.travelled / (100 / STROKES_PER_SCREEN / swim.length)) % swim.length;
 
         gsap.set(world.current, { x: -camera * vw() });
         gsap.set(dolphin.current, {
@@ -103,8 +107,9 @@ const Delfin = () => {
           scaleX: state.flip,
         });
         if (frame !== state.frame) {
+          frames.current[state.frame].style.visibility = "hidden";
+          frames.current[frame].style.visibility = "visible";
           state.frame = frame;
-          gsap.set(tail.current, { rotate: TAIL[frame], transformOrigin: "100% 50%" });
         }
 
         const near = gsap.utils.clamp(0, 1, 1 - Math.abs(DIAMOND - x) / 60);
@@ -158,10 +163,10 @@ const Delfin = () => {
         </div>
       </div>
       <div className="dolphin" ref={dolphin}>
-        <Dolphin frame={tail} />
+        <Dolphin frames={frames} />
       </div>
       <p className="delfin-note" lang="es">
-        delfín provisorio: espera tus dibujos
+        fondo y diamante provisorios: esperan tus dibujos
       </p>
     </section>
   );

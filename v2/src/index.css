@@ -223,14 +223,20 @@ button {
   position: absolute;
   top: 0;
   left: 0;
-  width: clamp(140px, 22vw, 280px);
+  width: clamp(170px, 28vw, 360px);
   will-change: transform;
 }
 
-.dolphin-svg {
-  display: block;
+.dolphin-frames {
+  position: relative;
+  aspect-ratio: 640 / 230;
+}
+
+.dolphin-frames img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  overflow: visible;
+  height: 100%;
 }
 
 .delfin-note {
