@@ -110,6 +110,13 @@ button {
 .field-hair {
   position: absolute;
   mix-blend-mode: screen;
+  rotate: calc(var(--wind, 0) * var(--give, 1) * 65deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-hair {
+    rotate: calc(var(--wind, 0) * var(--give, 1) * 30deg);
+  }
 }
 
 .outro {
@@ -150,4 +157,54 @@ button {
   border-bottom-color: hotpink;
   color: #e9e6e1;
   outline: none;
+}
+
+.blow {
+  position: fixed;
+  z-index: 2;
+  top: 1.5rem;
+  right: 2rem;
+  text-align: right;
+}
+
+.blow button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid #26242c;
+  background: none;
+  color: #7b7784;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.blow button:hover,
+.blow button:focus-visible,
+.blow[data-state="on"] button {
+  border-bottom-color: hotpink;
+  color: #e9e6e1;
+  outline: none;
+}
+
+.blow-meter {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  transform: scale(calc(1 + var(--level, 0) * 1.4));
+}
+
+.blow[data-state="on"] .blow-meter {
+  border-color: hotpink;
+  background: hotpink;
+}
+
+.blow-note {
+  max-width: 16rem;
+  margin: 0.35rem 0 0 auto;
+  color: #4a4752;
+  font-size: 0.7rem;
+  line-height: 1.4;
 }

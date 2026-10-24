@@ -2,6 +2,7 @@ import { Suspense, useLayoutEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
 
+import BlowButton from "./BlowButton";
 import Feet from "./Feet";
 import Gallery from "./Gallery";
 
@@ -52,6 +53,7 @@ const App = () => {
         </div>
       </section>
       <Gallery />
+      <BlowButton />
       <div className="footer-fade" aria-hidden="true" />
       <a className="version-link" href={V1} lang="es">
         Lo viejo funciona Juan

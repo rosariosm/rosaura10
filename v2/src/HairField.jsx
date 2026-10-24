@@ -3,6 +3,7 @@ import gsap from "gsap";
 
 import pie1 from "./feet/pie1.json";
 import pie2 from "./feet/pie2.json";
+import { wind } from "./wind";
 
 const urls = import.meta.glob("./feet/*-hair-*.png", { eager: true, import: "default", query: "?url" });
 
@@ -38,7 +39,7 @@ const layout = () => {
       if (d < (f.tight ? 2 : 8) || Math.random() > (f.tight ? 0.3 + 0.7 * t : 0.08 + 0.92 * t ** 1.6)) continue;
       const scale = size * Math.min(1, 0.15 + t ** 0.8);
       const sprite = sprites[Math.floor(Math.random() * sprites.length)];
-      hairs.push({ x, y, scale, sprite, tilt: gsap.utils.random(-70, 70) });
+      hairs.push({ x, y, scale, sprite, tilt: gsap.utils.random(-70, 70), give: gsap.utils.random(0.7, 1.4) });
     }
   }
 
@@ -53,6 +54,12 @@ const HairField = () => {
     const onResize = () => setHairs(layout());
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useLayoutEffect(() => {
+    const blow = () => root.current?.style.setProperty("--wind", wind.value.toFixed(3));
+    gsap.ticker.add(blow);
+    return () => gsap.ticker.remove(blow);
   }, []);
 
   useLayoutEffect(() => {
@@ -80,7 +87,7 @@ const HairField = () => {
 
   return (
     <div className="field" ref={root} aria-hidden="true">
-      {hairs.map(({ x, y, scale, sprite }, i) => {
+      {hairs.map(({ x, y, scale, sprite, give }, i) => {
         const k = scale;
         return (
           <img
@@ -94,6 +101,7 @@ const HairField = () => {
               width: sprite.w * k,
               height: sprite.h * k,
               transformOrigin: `${sprite.bx * k}px ${sprite.by * k}px`,
+              "--give": give,
             }}
           />
         );

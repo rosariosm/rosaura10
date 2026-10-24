@@ -4,6 +4,7 @@ import { TextureLoader, Vector3 } from "three";
 
 import pie1 from "./feet/pie1.json";
 import pie2 from "./feet/pie2.json";
+import { wind } from "./wind";
 
 const urls = import.meta.glob("./feet/*.png", {
   eager: true,
@@ -17,6 +18,8 @@ const INK = "#e9e6e1";
 const HEIGHT = 6;
 const DISTANCE = 6;
 const FOV = 75;
+const GUST =
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.6 : 1.2;
 
 const Hair = ({ hair, scale, texture, origin }) => {
   const pivot = useRef();
@@ -24,6 +27,7 @@ const Hair = ({ hair, scale, texture, origin }) => {
   const pointer = useMemo(() => new Vector3(), []);
   const phase = useMemo(() => Math.random() * Math.PI * 2, []);
   const speed = useMemo(() => 2 + Math.random() * 3, []);
+  const give = useMemo(() => 0.8 + Math.random() * 0.6, []);
   const excitement = useRef(0);
 
   const x = (origin.x + hair.x + hair.bx) * scale;
@@ -40,9 +44,12 @@ const Hair = ({ hair, scale, texture, origin }) => {
 
     const e = excitement.current;
     const t = clock.elapsedTime;
+    const gust = wind.value * give * GUST;
     pivot.current.rotation.z =
-      Math.sin(t * speed + phase) * (0.25 + e * 0.9) +
-      Math.sin(t * speed * 7.3 + phase) * e * 0.35;
+      Math.sin(t * speed + phase) * (0.25 + e * 0.9) * (1 - wind.value * 0.6) +
+      Math.sin(t * speed * 7.3 + phase) * e * 0.35 -
+      gust -
+      Math.sin(t * speed * 9 + phase) * gust * 0.12;
     pivot.current.scale.set(1 + e * 0.4, 1 + e * 1.6, 1);
   });
 
