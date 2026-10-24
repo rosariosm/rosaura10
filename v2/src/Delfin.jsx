@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import suelo from "./delfin/suelo.json";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const WORLD = 400;
@@ -9,21 +11,19 @@ const START = 20;
 const END = 360;
 const DIAMOND = 380;
 const SURFACE = 34;
-const DEPTH = 62;
+const DEPTH = 56;
 const PEAK = 15;
 const JUMP = [0.42, 0.6];
 const STROKES_PER_SCREEN = 6;
 
-const ROCKS = Array.from({ length: 14 }, (_, i) => ({
-  x: i * 30 + ((i * 37) % 17),
-  w: 18 + ((i * 53) % 22),
-  h: 8 + ((i * 29) % 14),
-}));
+const floorUrls = import.meta.glob("./delfin/suelo-*.png", { eager: true, import: "default", query: "?url" });
 
-const WEEDS = Array.from({ length: 22 }, (_, i) => ({
-  x: i * 18 + ((i * 41) % 11),
-  h: 10 + ((i * 23) % 18),
-}));
+const TALLEST = Math.max(...suelo.map((piece) => piece.h));
+const FLOOR_VH = 34;
+const FLOOR = Array.from({ length: 30 }, (_, i) => {
+  const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
+  return { ...piece, src: floorUrls[`./delfin/${piece.file}`], flip: i % 6 >= 3 };
+});
 
 const swim = Object.entries(
   import.meta.glob("./delfin/line-*.png", { eager: true, import: "default", query: "?url" })
@@ -126,20 +126,16 @@ const Delfin = () => {
   return (
     <section className="delfin" ref={root} aria-label="un delfín que nada mientras scrolleás">
       <div className="delfin-world" ref={world} style={{ width: `${WORLD}vw` }}>
-        <svg className="delfin-floor" viewBox={`0 0 ${WORLD} 100`} preserveAspectRatio="none" aria-hidden="true">
-          {ROCKS.map(({ x, w, h }) => (
-            <path key={x} d={`M${x} 100 Q${x + w / 2} ${100 - h * 2} ${x + w} 100 Z`} fill="#1a1a1a" />
-          ))}
-          {WEEDS.map(({ x, h }) => (
-            <path
-              key={x}
-              d={`M${x} 100 q2 -${h / 3} -1 -${(h * 2) / 3} q-2 -${h / 6} 1 -${h / 3}`}
-              stroke="#2c2c2c"
-              strokeWidth="0.6"
-              fill="none"
+        <div className="delfin-floor" aria-hidden="true">
+          {FLOOR.map(({ src, h, flip }, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              style={{ height: `${(h / TALLEST) * FLOOR_VH}vh`, transform: flip ? "scaleX(-1)" : undefined }}
             />
           ))}
-        </svg>
+        </div>
         <svg
           className="delfin-surface"
           viewBox={`0 0 ${WORLD} 4`}
@@ -166,7 +162,7 @@ const Delfin = () => {
         <Dolphin frames={frames} />
       </div>
       <p className="delfin-note" lang="es">
-        fondo y diamante provisorios: esperan tus dibujos
+        diamante provisorio: espera tu dibujo
       </p>
     </section>
   );
