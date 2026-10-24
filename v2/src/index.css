@@ -472,7 +472,7 @@ button {
 
 .checkout-track {
   position: absolute;
-  left: 100vw;
+  left: 0;
   z-index: 2;
   display: flex;
   align-items: flex-end;
@@ -548,6 +548,7 @@ button {
   border: 3px solid #e9e6e1;
   border-radius: 3vh;
   background-color: #000;
+  background-size: 46px 100%;
   background-image: repeating-linear-gradient(90deg, transparent 0 85%, #e9e6e1 85% 90%, transparent 90% 100%);
 }
 
@@ -580,12 +581,134 @@ button {
   font-size: 0.75rem;
 }
 
+.store,
+.checkout {
+  position: absolute;
+  inset: 0;
+}
+
+.store {
+  touch-action: none;
+  user-select: none;
+}
+
+.store-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.store-product {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.store-hint {
+  position: absolute;
+  margin: 0;
+  color: #7b7784;
+  font-size: 0.85rem;
+  text-align: center;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.store-finish {
+  position: absolute;
+  z-index: 4;
+  padding: 0.5rem 1rem;
+  border: 2px solid #e9e6e1;
+  border-radius: 999px;
+  background: #000;
+  color: #e9e6e1;
+  font: inherit;
+  font-size: 0.9rem;
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+}
+
+.store-finish:hover,
+.store-finish:focus-visible {
+  border-color: hotpink;
+  color: hotpink;
+  outline: none;
+}
+
+.checkout-again {
+  top: 86vh;
+  left: 50%;
+}
+
+.register {
+  position: absolute;
+  right: 4vw;
+  z-index: 1;
+  width: min(30vw, 34vh);
+}
+
+.ticket {
+  position: absolute;
+  top: 10vh;
+  right: calc(4vw + min(30vw, 34vh) * 0.25);
+  z-index: 1;
+  width: min(15rem, 56vw);
+  padding: 0.6rem 0.8rem;
+  background: #f4f1ea;
+  color: #1d1b20;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 92% 97%, 84% 100%, 76% 97%, 68% 100%, 60% 97%, 52% 100%, 44% 97%, 36% 100%, 28% 97%, 20% 100%, 12% 97%, 4% 100%, 0 97%);
+}
+
+.ticket p {
+  margin: 0;
+}
+
+.ticket .ticket-title {
+  margin-bottom: 0.4rem;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+.ticket-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ticket .ticket-total {
+  margin-top: 0.4rem;
+  padding-top: 0.3rem;
+  border-top: 1px dashed #1d1b20;
+  font-weight: 700;
+}
+
+.ticket .ticket-thanks {
+  margin: 0.4rem 0 0.4rem;
+  text-align: center;
+}
+
 @media (max-aspect-ratio: 3/4) {
+  .register {
+    width: 40vw;
+  }
+
+  .ticket {
+    top: 14vh;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .color {
     --product: 26vh;
   }
 
   .color-note {
-    bottom: 4.5rem;
+    display: none;
   }
 }
