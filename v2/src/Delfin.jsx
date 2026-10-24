@@ -87,15 +87,15 @@ const Delfin = () => {
       gsap.to(diamond.current, { rotateY: 360, duration: 3, ease: "none", repeat: -1 });
 
       gsap.utils.toArray(".floor-corals").forEach((el) => {
-        const lean = gsap.utils.random(2, 4.5);
+        const lean = gsap.utils.random(7, 11);
         gsap.fromTo(
           el,
           { skewX: -lean, scaleY: 1 },
           {
             skewX: lean,
-            scaleY: gsap.utils.random(1.01, 1.04),
+            scaleY: gsap.utils.random(1.03, 1.08),
             transformOrigin: `50% ${CORALS}%`,
-            duration: gsap.utils.random(3, 5.5),
+            duration: gsap.utils.random(2.5, 4),
             delay: gsap.utils.random(0, 3),
             ease: "sine.inOut",
             repeat: -1,
