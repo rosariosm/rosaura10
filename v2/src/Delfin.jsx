@@ -15,6 +15,7 @@ const DEPTH = 56;
 const PEAK = 15;
 const JUMP = [0.42, 0.6];
 const STROKES_PER_SCREEN = 6;
+const SWIM = 0.72;
 
 const floorUrls = import.meta.glob("./delfin/suelo-*.png", { eager: true, import: "default", query: "?url" });
 
@@ -52,6 +53,9 @@ const Delfin = () => {
   const dolphin = useRef();
   const frames = useRef([]);
   const diamond = useRef();
+  const diamondBox = useRef();
+  const outro = useRef();
+  const note = useRef();
 
   useLayoutEffect(() => {
     const state = { target: 0, progress: 0, facing: 1, flip: 1, travelled: 0, frame: 0 };
@@ -60,7 +64,7 @@ const Delfin = () => {
       ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
-        end: "+=700%",
+        end: "+=1000%",
         pin: true,
         onUpdate: (self) => {
           state.target = self.progress;
@@ -77,10 +81,13 @@ const Delfin = () => {
       const vw = () => window.innerWidth / 100;
       const vh = () => window.innerHeight / 100;
 
+      const clamp = gsap.utils.clamp(0, 1);
+
       const render = (time) => {
-        const before = state.progress;
+        const before = clamp(state.progress / SWIM);
         state.progress += (state.target - state.progress) * 0.12;
-        const p = state.progress;
+        const p = clamp(state.progress / SWIM);
+        const o = clamp((state.progress - SWIM) / (1 - SWIM));
         state.travelled += Math.abs(p - before) * (END - START);
 
         const x = START + (END - START) * p;
@@ -113,8 +120,24 @@ const Delfin = () => {
           state.frame = frame;
         }
 
-        const near = gsap.utils.clamp(0, 1, 1 - Math.abs(DIAMOND - x) / 60);
-        gsap.set(diamond.current, { "--glow": near });
+        const near = clamp(1 - Math.abs(DIAMOND - x) / 60);
+        const zoom = clamp(o / 0.6);
+        const travel = gsap.parseEase("power2.inOut")(zoom);
+        const grow = zoom ** 3;
+        const fade = 1 - clamp(o / 0.35);
+        const reveal = gsap.parseEase("power2.out")(clamp((o - 0.55) / 0.3));
+
+        gsap.set(diamondBox.current, {
+          xPercent: -50,
+          yPercent: -50,
+          x: gsap.utils.interpolate((DIAMOND - camera) * vw(), 50 * vw(), travel),
+          y: gsap.utils.interpolate((DEPTH - 2) * vh(), 50 * vh(), travel),
+          scale: 1 + grow * 40,
+          opacity: 1 - clamp((o - 0.45) / 0.2),
+        });
+        gsap.set(diamond.current, { "--glow": Math.max(near, zoom) });
+        gsap.set([world.current, dolphin.current, note.current], { opacity: fade });
+        gsap.set(outro.current, { opacity: reveal, "--reveal": reveal });
       };
 
       gsap.ticker.add(render);
@@ -156,17 +179,22 @@ const Delfin = () => {
             vectorEffect="non-scaling-stroke"
           />
         </svg>
-        <div className="delfin-diamond" style={{ left: `${DIAMOND}vw`, top: `${DEPTH - 6}vh` }}>
-          <svg ref={diamond} viewBox="0 0 60 80" aria-hidden="true">
-            <path d="M30 2 L58 30 L30 78 L2 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="3" />
-            <path d="M2 30 L58 30 M30 2 L18 30 L30 78 L42 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="1.5" />
-          </svg>
-        </div>
+      </div>
+      <div className="delfin-diamond" ref={diamondBox}>
+        <svg ref={diamond} viewBox="0 0 60 80" aria-hidden="true">
+          <path d="M30 2 L58 30 L30 78 L2 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="3" />
+          <path d="M2 30 L58 30 M30 2 L18 30 L30 78 L42 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="1.5" />
+        </svg>
       </div>
       <div className="dolphin" ref={dolphin}>
         <Dolphin frames={frames} />
       </div>
-      <p className="delfin-note" lang="es">
+      <div className="delfin-outro" ref={outro}>
+        <img className="delfin-outro-left" src={floorUrls["./delfin/suelo-3.png"]} alt="" />
+        <p lang="es">pasé mucho tiempo jugando a los jueguitos y teniendo vergüenza al pedo</p>
+        <img className="delfin-outro-right" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
+      </div>
+      <p className="delfin-note" ref={note} lang="es">
         diamante provisorio: espera tu dibujo
       </p>
     </section>
