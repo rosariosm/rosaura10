@@ -10,8 +10,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const WORLD = 400;
 const START = 20;
-const END = 360;
-const DIAMOND = 380;
+const END = 350;
+const DIAMOND = 374;
 const SURFACE = 34;
 const DEPTH = 56;
 const PEAK = 15;
@@ -39,6 +39,31 @@ const FLOOR = Array.from({ length: 30 }, (_, i) => {
     sway: i % 5 !== 2 && i % 4 !== 3,
   };
 });
+
+const shine = Object.entries(
+  import.meta.glob("./delfin/diamante-*.png", { eager: true, import: "default", query: "?url" })
+)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, src]) => src);
+const SHINE_FPS = 6;
+
+const LAST = { ...suelo[1], src: floorUrls[`./delfin/${suelo[1].file}`] };
+const LAST_GAP = 4;
+
+const FloorPiece = ({ src, w, h, flip, space, sway, className = "" }) => (
+  <div
+    className={`floor-piece ${className}`}
+    style={{
+      width: `calc(${w / TALLEST} * var(--floor))`,
+      height: `calc(${h / TALLEST} * var(--floor))`,
+      marginRight: space ? `calc(${space / FLOOR_VH} * var(--floor))` : undefined,
+      transform: flip ? "scaleX(-1)" : undefined,
+    }}
+  >
+    <img className={sway ? "floor-rocks" : undefined} src={src} alt="" />
+    {sway && <img className="floor-corals" src={src} alt="" />}
+  </div>
+);
 
 const swim = Object.entries(
   import.meta.glob("./delfin/line-*.png", { eager: true, import: "default", query: "?url" })
@@ -75,11 +100,10 @@ const Delfin = () => {
   const diamond = useRef();
   const diamondBox = useRef();
   const outro = useRef();
-  const note = useRef();
   const bubbleLayer = useRef();
 
   useLayoutEffect(() => {
-    const state = { target: 0, progress: 0, facing: 1, flip: 1, travelled: 0, frame: 0 };
+    const state = { target: 0, progress: 0, facing: 1, flip: 1, travelled: 0, frame: 0, shine: 0 };
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
@@ -96,8 +120,6 @@ const Delfin = () => {
           }
         },
       });
-
-      gsap.to(diamond.current, { rotateY: 360, duration: 3, ease: "none", repeat: -1 });
 
       gsap.to(".sea-layer-1", { opacity: 1, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
       gsap.to(".sea-layer-0", { opacity: 0.2, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
@@ -120,6 +142,15 @@ const Delfin = () => {
           }
         );
       });
+
+      const fitFloor = () => {
+        const last = root.current.querySelector(".floor-piece-last");
+        const limit = last.offsetLeft - LAST_GAP * vh();
+        root.current.querySelectorAll(".floor-piece:not(.floor-piece-last)").forEach((el) => {
+          el.style.visibility = el.offsetLeft + el.offsetWidth <= limit ? "" : "hidden";
+        });
+      };
+      window.addEventListener("resize", fitFloor);
 
       const vw = () => window.innerWidth / 100;
       const vh = () => window.innerHeight / 100;
@@ -155,7 +186,10 @@ const Delfin = () => {
         const o = clamp((state.progress - SWIM) / (1 - SWIM));
         state.travelled += Math.abs(p - before) * (END - START);
 
-        const x = START + (END - START) * p;
+        const dolphinVw = dolphin.current.offsetWidth / vw();
+        const diamondVw = diamondBox.current.offsetWidth / vw();
+        const end = Math.min(END, DIAMOND - 5 - (dolphinVw + diamondVw) / 2);
+        const x = START + (end - START) * p;
         const camera = gsap.utils.clamp(0, WORLD - 100, x - 50);
 
         const [j0, j1] = JUMP;
@@ -185,6 +219,13 @@ const Delfin = () => {
           state.frame = frame;
         }
 
+        const shineFrame = Math.floor(time * SHINE_FPS) % shine.length;
+        if (shineFrame !== state.shine) {
+          diamond.current.children[state.shine].style.visibility = "hidden";
+          diamond.current.children[shineFrame].style.visibility = "visible";
+          state.shine = shineFrame;
+        }
+
         const near = clamp(1 - Math.abs(DIAMOND - x) / 60);
         const zoom = clamp(o / 0.6);
         const travel = gsap.parseEase("power2.inOut")(zoom);
@@ -199,7 +240,6 @@ const Delfin = () => {
         const speed = Math.abs(p - before) / Math.max(dt, 0.001);
         if (!calm && y > SURFACE + 3) {
           bubbleState.trail += dt * Math.min(speed * 60, 14);
-          const dolphinVw = dolphin.current.offsetWidth / vw();
           while (bubbleState.trail > 1) {
             bubbleState.trail -= 1;
             spawn(x - state.flip * dolphinVw * 0.42, y + gsap.utils.random(-1.5, 1.5), true);
@@ -228,12 +268,14 @@ const Delfin = () => {
           opacity: 1 - clamp((o - 0.45) / 0.2),
         });
         gsap.set(diamond.current, { "--glow": Math.max(near, zoom) });
-        gsap.set([world.current, dolphin.current, note.current], { opacity: fade });
+        gsap.set([world.current, dolphin.current], { opacity: fade });
         gsap.set(outro.current, { opacity: reveal, "--reveal": reveal });
       };
 
+      fitFloor();
       gsap.ticker.add(render);
       return () => {
+        window.removeEventListener("resize", fitFloor);
         gsap.ticker.remove(render);
         bubbles.forEach((b) => b.el.remove());
       };
@@ -246,20 +288,10 @@ const Delfin = () => {
     <section className="delfin" ref={root} aria-label="un delfín que nada mientras scrolleás">
       <div className="delfin-world" ref={world} style={{ width: `${WORLD}vw` }}>
         <div className="delfin-floor" aria-hidden="true">
-          {FLOOR.map(({ src, h, flip, space, sway }, i) => (
-            <div
-              key={i}
-              className="floor-piece"
-              style={{
-                height: `${(h / TALLEST) * FLOOR_VH}vh`,
-                marginRight: `${space}vh`,
-                transform: flip ? "scaleX(-1)" : undefined,
-              }}
-            >
-              <img className={sway ? "floor-rocks" : undefined} src={src} alt="" />
-              {sway && <img className="floor-corals" src={src} alt="" />}
-            </div>
+          {FLOOR.map((piece, i) => (
+            <FloorPiece key={i} {...piece} />
           ))}
+          <FloorPiece {...LAST} sway className="floor-piece-last" />
         </div>
         <div className="delfin-surface" style={{ top: `${SURFACE - SEA_VH / 2}vh`, height: `${SEA_VH}vh` }} aria-hidden="true">
           {[0, 1].map((layer) => (
@@ -272,10 +304,11 @@ const Delfin = () => {
         </div>
       </div>
       <div className="delfin-diamond" ref={diamondBox}>
-        <svg ref={diamond} viewBox="0 0 60 80" aria-hidden="true">
-          <path d="M30 2 L58 30 L30 78 L2 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="3" />
-          <path d="M2 30 L58 30 M30 2 L18 30 L30 78 L42 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="1.5" />
-        </svg>
+        <div className="diamond-frames" ref={diamond} aria-hidden="true">
+          {shine.map((src, i) => (
+            <img key={src} src={src} alt="" style={{ visibility: i === 0 ? "visible" : "hidden" }} />
+          ))}
+        </div>
       </div>
       <div className="delfin-bubbles" ref={bubbleLayer} aria-hidden="true" />
       <div className="dolphin" ref={dolphin}>
@@ -294,9 +327,6 @@ const Delfin = () => {
         <Reef className="delfin-outro-right" src={arrecife} />
         <Reef className="delfin-outro-right delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} />
       </div>
-      <p className="delfin-note" ref={note} lang="es">
-        diamante provisorio: espera tu dibujo
-      </p>
     </section>
   );
 };
