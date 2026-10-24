@@ -451,3 +451,141 @@ button {
     right: 0;
   }
 }
+
+.mini-can {
+  display: block;
+  height: 64px;
+  margin-bottom: 4px;
+}
+
+.mini-can img {
+  display: block;
+  height: 100%;
+}
+
+.color {
+  --product: 38vh;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.checkout-track {
+  position: absolute;
+  left: 100vw;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: 9vw;
+  padding-right: 9vw;
+}
+
+.product {
+  flex: none;
+}
+
+.product img {
+  display: block;
+  height: 100%;
+}
+
+.checkout-scanner {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  width: max(70px, 9vw);
+  height: 12vh;
+  border: 3px solid #e9e6e1;
+  border-bottom: 0;
+  border-radius: 1.2vh 1.2vh 0 0;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.checkout-window {
+  position: absolute;
+  inset: 1.6vh 18%;
+  border: 2px solid #e9e6e1;
+  border-radius: 0.6vh;
+  background: rgb(255 60 70 / calc(0.25 + var(--flash, 0) * 0.65));
+  box-shadow: 0 0 calc(var(--flash, 0) * 50px) rgb(255 40 60 / 0.8);
+}
+
+.checkout-window::after {
+  content: "";
+  position: absolute;
+  inset: 50% -10% auto;
+  height: 2px;
+  background: #ff3346;
+}
+
+.checkout-belt {
+  position: absolute;
+  left: -4vh;
+  right: -4vh;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  height: 6vh;
+}
+
+.checkout-belt::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 40vh;
+  border-top: 3px solid #e9e6e1;
+  background: #000;
+}
+
+.belt {
+  flex: 1;
+  height: 100%;
+  margin: 0 -3.5vh;
+  border: 3px solid #e9e6e1;
+  border-radius: 3vh;
+  background-color: #000;
+  background-image: repeating-linear-gradient(90deg, transparent 0 85%, #e9e6e1 85% 90%, transparent 90% 100%);
+}
+
+.roller {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 7vh;
+  height: 7vh;
+  border: 3px solid #e9e6e1;
+  border-radius: 50%;
+  background: #000;
+}
+
+.roller::after {
+  content: "";
+  position: absolute;
+  inset: 45% 10%;
+  border-radius: 2px;
+  background: #e9e6e1;
+}
+
+.color-note {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 4;
+  margin: 0;
+  color: #4a4752;
+  font-size: 0.75rem;
+}
+
+@media (max-aspect-ratio: 3/4) {
+  .color {
+    --product: 26vh;
+  }
+
+  .color-note {
+    bottom: 4.5rem;
+  }
+}

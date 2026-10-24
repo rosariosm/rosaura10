@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
+import lata from "./color/lata.webp";
 import pie1 from "./feet/pie1.json";
 
 const feet = import.meta.glob("./feet/pie1*.png", { eager: true, import: "default", query: "?url" });
@@ -126,6 +127,45 @@ const Dolphin = () => {
   );
 };
 
+const Can = () => {
+  const root = useRef();
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const wobble = gsap.to(root.current, {
+        keyframes: { rotate: [0, -12, 10, -6, 0] },
+        duration: 0.7,
+        ease: "sine.inOut",
+        repeat: -1,
+        paused: true,
+      });
+      const link = root.current.closest("a");
+      const on = () => wobble.play();
+      const off = () => {
+        wobble.pause();
+        gsap.to(root.current, { rotate: 0, duration: 0.3 });
+      };
+      link.addEventListener("pointerenter", on);
+      link.addEventListener("pointerleave", off);
+      link.addEventListener("focus", on);
+      link.addEventListener("blur", off);
+      return () => {
+        link.removeEventListener("pointerenter", on);
+        link.removeEventListener("pointerleave", off);
+        link.removeEventListener("focus", on);
+        link.removeEventListener("blur", off);
+      };
+    }, root);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <span className="mini-can" ref={root}>
+      <img src={lata} alt="" />
+    </span>
+  );
+};
+
 const Underline = () => (
   <svg className="menu-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true">
     <path d="M2 5 C 18 2, 30 7, 46 4 S 78 2, 98 5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
@@ -135,6 +175,7 @@ const Underline = () => (
 const ITEMS = [
   { key: "pelos", label: "pelos", Icon: Leg },
   { key: "delfin", label: "delfín", Icon: Dolphin },
+  { key: "color", label: "color", Icon: Can },
 ];
 
 const Menu = ({ page }) => (
