@@ -2,13 +2,14 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Delfin from "./Delfin";
+import Menu from "./Menu";
 import Pelos from "./Pelos";
 
 const V1 = "/rosaura10/v1/";
 
 const PAGES = {
-  pelos: { label: "pelos", Page: Pelos },
-  delfin: { label: "delfín", Page: Delfin },
+  pelos: Pelos,
+  delfin: Delfin,
 };
 
 const fromHash = () => {
@@ -30,17 +31,11 @@ const App = () => {
     ScrollTrigger.refresh();
   }, [page]);
 
-  const { Page } = PAGES[page];
+  const Page = PAGES[page];
 
   return (
     <>
-      <nav className="menu" aria-label="secciones">
-        {Object.entries(PAGES).map(([key, { label }]) => (
-          <a key={key} href={`#${key}`} aria-current={key === page ? "page" : undefined}>
-            {label}
-          </a>
-        ))}
-      </nav>
+      <Menu page={page} />
       <Page key={page} />
       <div className="footer-fade" aria-hidden="true" />
       <a className="version-link" href={V1} lang="es">
