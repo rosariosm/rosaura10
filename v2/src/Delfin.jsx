@@ -23,9 +23,16 @@ const floorUrls = import.meta.glob("./delfin/suelo-*.png", { eager: true, import
 const TALLEST = Math.max(...suelo.map((piece) => piece.h));
 const FLOOR_VH = 34;
 const SPACES = [30, 55, 38, 70, 26, 48, 62];
+const CORALS = 48;
 const FLOOR = Array.from({ length: 30 }, (_, i) => {
   const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
-  return { ...piece, src: floorUrls[`./delfin/${piece.file}`], flip: i % 6 >= 3, space: SPACES[i % SPACES.length] };
+  return {
+    ...piece,
+    src: floorUrls[`./delfin/${piece.file}`],
+    flip: i % 6 >= 3,
+    space: SPACES[i % SPACES.length],
+    sway: i % 5 !== 2 && i % 4 !== 3,
+  };
 });
 
 const swim = Object.entries(
@@ -78,6 +85,24 @@ const Delfin = () => {
       });
 
       gsap.to(diamond.current, { rotateY: 360, duration: 3, ease: "none", repeat: -1 });
+
+      gsap.utils.toArray(".floor-corals").forEach((el) => {
+        const lean = gsap.utils.random(2, 4.5);
+        gsap.fromTo(
+          el,
+          { skewX: -lean, scaleY: 1 },
+          {
+            skewX: lean,
+            scaleY: gsap.utils.random(1.01, 1.04),
+            transformOrigin: `50% ${CORALS}%`,
+            duration: gsap.utils.random(3, 5.5),
+            delay: gsap.utils.random(0, 3),
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          }
+        );
+      });
 
       const vw = () => window.innerWidth / 100;
       const vh = () => window.innerHeight / 100;
@@ -152,17 +177,19 @@ const Delfin = () => {
     <section className="delfin" ref={root} aria-label="un delfín que nada mientras scrolleás">
       <div className="delfin-world" ref={world} style={{ width: `${WORLD}vw` }}>
         <div className="delfin-floor" aria-hidden="true">
-          {FLOOR.map(({ src, h, flip, space }, i) => (
-            <img
+          {FLOOR.map(({ src, h, flip, space, sway }, i) => (
+            <div
               key={i}
-              src={src}
-              alt=""
+              className="floor-piece"
               style={{
                 height: `${(h / TALLEST) * FLOOR_VH}vh`,
                 marginRight: `${space}vh`,
                 transform: flip ? "scaleX(-1)" : undefined,
               }}
-            />
+            >
+              <img className={sway ? "floor-rocks" : undefined} src={src} alt="" />
+              {sway && <img className="floor-corals" src={src} alt="" />}
+            </div>
           ))}
         </div>
         <svg
