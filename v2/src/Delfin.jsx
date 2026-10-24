@@ -20,9 +20,10 @@ const floorUrls = import.meta.glob("./delfin/suelo-*.png", { eager: true, import
 
 const TALLEST = Math.max(...suelo.map((piece) => piece.h));
 const FLOOR_VH = 34;
+const SPACES = [30, 55, 38, 70, 26, 48, 62];
 const FLOOR = Array.from({ length: 30 }, (_, i) => {
   const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
-  return { ...piece, src: floorUrls[`./delfin/${piece.file}`], flip: i % 6 >= 3 };
+  return { ...piece, src: floorUrls[`./delfin/${piece.file}`], flip: i % 6 >= 3, space: SPACES[i % SPACES.length] };
 });
 
 const swim = Object.entries(
@@ -127,12 +128,16 @@ const Delfin = () => {
     <section className="delfin" ref={root} aria-label="un delfín que nada mientras scrolleás">
       <div className="delfin-world" ref={world} style={{ width: `${WORLD}vw` }}>
         <div className="delfin-floor" aria-hidden="true">
-          {FLOOR.map(({ src, h, flip }, i) => (
+          {FLOOR.map(({ src, h, flip, space }, i) => (
             <img
               key={i}
               src={src}
               alt=""
-              style={{ height: `${(h / TALLEST) * FLOOR_VH}vh`, transform: flip ? "scaleX(-1)" : undefined }}
+              style={{
+                height: `${(h / TALLEST) * FLOOR_VH}vh`,
+                marginRight: `${space}vh`,
+                transform: flip ? "scaleX(-1)" : undefined,
+              }}
             />
           ))}
         </div>
