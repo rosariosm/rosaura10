@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import arrecife from "./delfin/arrecife.png";
 import suelo from "./delfin/suelo.json";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -190,9 +191,9 @@ const Delfin = () => {
         <Dolphin frames={frames} />
       </div>
       <div className="delfin-outro" ref={outro}>
-        <img className="delfin-outro-left" src={floorUrls["./delfin/suelo-3.png"]} alt="" />
+        <img className="delfin-outro-left" src={arrecife} alt="" />
         <p lang="es">pasé mucho tiempo jugando a los jueguitos y teniendo vergüenza al pedo</p>
-        <img className="delfin-outro-right" src={floorUrls["./delfin/suelo-1.png"]} alt="" />
+        <img className="delfin-outro-right" src={arrecife} alt="" />
       </div>
       <p className="delfin-note" ref={note} lang="es">
         diamante provisorio: espera tu dibujo

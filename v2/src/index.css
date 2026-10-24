@@ -322,21 +322,18 @@ button {
 .delfin-outro img {
   position: absolute;
   bottom: 0;
-  height: 34vh;
+  height: 94vh;
   width: auto;
-  max-width: 48vw;
-  object-fit: contain;
+  max-width: none;
 }
 
 .delfin-outro-left {
-  left: 0;
-  object-position: left bottom;
+  right: calc(50% + min(12rem, 22vw));
   transform: translateX(calc((var(--reveal, 0) - 1) * 100%));
 }
 
 .delfin-outro-right {
-  right: 0;
-  object-position: right bottom;
+  left: calc(50% + min(12rem, 22vw));
   transform: translateX(calc((1 - var(--reveal, 0)) * 100%)) scaleX(-1);
 }
 
@@ -347,4 +344,25 @@ button {
   margin: 0;
   color: #4a4752;
   font-size: 0.75rem;
+}
+
+@media (max-aspect-ratio: 3/4) {
+  .delfin-outro {
+    align-items: start;
+    padding-top: 22vh;
+  }
+
+  .delfin-outro img {
+    height: 58vh;
+  }
+
+  .delfin-outro-left {
+    right: auto;
+    left: -62vh;
+  }
+
+  .delfin-outro-right {
+    left: auto;
+    right: -62vh;
+  }
 }
