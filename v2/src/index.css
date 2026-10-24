@@ -318,6 +318,22 @@ button {
   height: 100%;
 }
 
+.delfin-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  border: 1.5px solid #e9e6e1;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
 .delfin-outro {
   position: absolute;
   inset: 0;

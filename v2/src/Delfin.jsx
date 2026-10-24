@@ -24,6 +24,8 @@ const TALLEST = Math.max(...suelo.map((piece) => piece.h));
 const FLOOR_VH = 34;
 const SPACES = [30, 55, 38, 70, 26, 48, 62];
 const CORALS = 48;
+const BUBBLES = 40;
+const FLOOR_TOP = 100 - FLOOR_VH * 0.6;
 const FLOOR = Array.from({ length: 30 }, (_, i) => {
   const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
   return {
@@ -71,6 +73,7 @@ const Delfin = () => {
   const diamondBox = useRef();
   const outro = useRef();
   const note = useRef();
+  const bubbleLayer = useRef();
 
   useLayoutEffect(() => {
     const state = { target: 0, progress: 0, facing: 1, flip: 1, travelled: 0, frame: 0 };
@@ -116,7 +119,29 @@ const Delfin = () => {
 
       const clamp = gsap.utils.clamp(0, 1);
 
-      const render = (time) => {
+      const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const bubbles = Array.from({ length: BUBBLES }, () => {
+        const el = document.createElement("span");
+        el.className = "bubble";
+        bubbleLayer.current.appendChild(el);
+        return { el, alive: false, x: 0, y: 0, size: 0, rise: 0, phase: 0 };
+      });
+      const spawn = (x, y, small) => {
+        const b = bubbles.find((bubble) => !bubble.alive);
+        if (!b) return;
+        b.alive = true;
+        b.x = x;
+        b.y = y;
+        b.size = small ? gsap.utils.random(3, 7) : gsap.utils.random(5, 14);
+        b.rise = gsap.utils.random(5, 10) * (b.size / 10 + 0.5);
+        b.phase = Math.random() * Math.PI * 2;
+        b.el.style.width = b.el.style.height = `${b.size}px`;
+        b.el.style.display = "block";
+      };
+      const bubbleState = { ambient: 0, trail: 0 };
+
+      const render = (time, deltaMs) => {
+        const dt = Math.min(deltaMs, 50) / 1000;
         const before = clamp(state.progress / SWIM);
         state.progress += (state.target - state.progress) * 0.12;
         const p = clamp(state.progress / SWIM);
@@ -158,6 +183,33 @@ const Delfin = () => {
         const travel = gsap.parseEase("power2.inOut")(zoom);
         const grow = zoom ** 3;
         const fade = 1 - clamp(o / 0.35);
+
+        bubbleState.ambient += dt * (calm ? 0.6 : 1.6);
+        while (bubbleState.ambient > 1) {
+          bubbleState.ambient -= 1;
+          spawn(camera + Math.random() * 100, FLOOR_TOP + Math.random() * (100 - FLOOR_TOP), false);
+        }
+        const speed = Math.abs(p - before) / Math.max(dt, 0.001);
+        if (!calm && y > SURFACE + 3) {
+          bubbleState.trail += dt * Math.min(speed * 60, 14);
+          const dolphinVw = dolphin.current.offsetWidth / vw();
+          while (bubbleState.trail > 1) {
+            bubbleState.trail -= 1;
+            spawn(x - state.flip * dolphinVw * 0.42, y + gsap.utils.random(-1.5, 1.5), true);
+          }
+        }
+        bubbles.forEach((b) => {
+          if (!b.alive) return;
+          b.y -= b.rise * dt;
+          if (b.y < SURFACE + 0.5) {
+            b.alive = false;
+            b.el.style.display = "none";
+            return;
+          }
+          const wobble = Math.sin(time * 2 + b.phase) * 0.6;
+          b.el.style.transform = `translate(${(b.x - camera + wobble) * vw() - b.size / 2}px, ${b.y * vh() - b.size / 2}px)`;
+        });
+        bubbleLayer.current.style.opacity = fade;
         const reveal = gsap.parseEase("power2.out")(clamp((o - 0.55) / 0.3));
 
         gsap.set(diamondBox.current, {
@@ -174,7 +226,10 @@ const Delfin = () => {
       };
 
       gsap.ticker.add(render);
-      return () => gsap.ticker.remove(render);
+      return () => {
+        gsap.ticker.remove(render);
+        bubbles.forEach((b) => b.el.remove());
+      };
     }, root);
 
     return () => ctx.revert();
@@ -221,6 +276,7 @@ const Delfin = () => {
           <path d="M2 30 L58 30 M30 2 L18 30 L30 78 L42 30 Z" fill="none" stroke="#e9e6e1" strokeWidth="1.5" />
         </svg>
       </div>
+      <div className="delfin-bubbles" ref={bubbleLayer} aria-hidden="true" />
       <div className="dolphin" ref={dolphin}>
         <Dolphin frames={frames} />
       </div>
