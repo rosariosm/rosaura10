@@ -358,11 +358,11 @@ button {
 
   .delfin-outro-left {
     right: auto;
-    left: -62vh;
+    left: calc(40vw - 58vh * 2.14);
   }
 
   .delfin-outro-right {
     left: auto;
-    right: -62vh;
+    right: calc(40vw - 58vh * 2.14);
   }
 }
