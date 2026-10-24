@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import arrecife from "./delfin/arrecife.png";
+import mar from "./delfin/mar.png";
 import suelo from "./delfin/suelo.json";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -25,6 +26,8 @@ const FLOOR_VH = 34;
 const SPACES = [30, 55, 38, 70, 26, 48, 62];
 const CORALS = 48;
 const BUBBLES = 40;
+const SEA_VH = 10;
+const SEA_TILES = 28;
 const FLOOR_TOP = 100 - FLOOR_VH * 0.6;
 const FLOOR = Array.from({ length: 30 }, (_, i) => {
   const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
@@ -95,6 +98,10 @@ const Delfin = () => {
       });
 
       gsap.to(diamond.current, { rotateY: 360, duration: 3, ease: "none", repeat: -1 });
+
+      gsap.to(".sea-layer-1", { opacity: 1, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
+      gsap.to(".sea-layer-0", { opacity: 0.2, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
+      gsap.to(".delfin-surface", { y: "0.6vh", duration: 2.4, ease: "sine.inOut", repeat: -1, yoyo: true });
 
       gsap.utils.toArray(".floor-corals").forEach((el) => {
         const lean = gsap.utils.random(7, 11);
@@ -254,21 +261,15 @@ const Delfin = () => {
             </div>
           ))}
         </div>
-        <svg
-          className="delfin-surface"
-          viewBox={`0 0 ${WORLD} 4`}
-          preserveAspectRatio="none"
-          style={{ top: `${SURFACE}vh` }}
-          aria-hidden="true"
-        >
-          <path
-            d={`M0 2 ${Array.from({ length: WORLD / 4 }, (_, i) => `q1 ${i % 2 ? 1.5 : -1.5} 2 0 t2 0`).join(" ")}`}
-            stroke="#e9e6e1"
-            strokeWidth="0.25"
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+        <div className="delfin-surface" style={{ top: `${SURFACE - SEA_VH / 2}vh`, height: `${SEA_VH}vh` }} aria-hidden="true">
+          {[0, 1].map((layer) => (
+            <div key={layer} className={`sea-layer sea-layer-${layer}`}>
+              {Array.from({ length: SEA_TILES }, (_, i) => (
+                <img key={i} src={mar} alt="" style={{ transform: (i + layer) % 2 ? "scaleX(-1)" : undefined }} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
       <div className="delfin-diamond" ref={diamondBox}>
         <svg ref={diamond} viewBox="0 0 60 80" aria-hidden="true">

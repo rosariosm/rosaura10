@@ -281,7 +281,24 @@ button {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 2vh;
+  overflow: hidden;
+}
+
+.sea-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.sea-layer-1 {
+  opacity: 0;
+}
+
+.sea-layer img {
+  display: block;
+  flex: none;
+  height: 100%;
+  width: auto;
 }
 
 .delfin-diamond {
