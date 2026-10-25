@@ -44,9 +44,14 @@ const PATH_SCALE = 0.3;
 const STONE_SCALE = 0.2;
 const PATH_WIDEN = 9;
 const PATHLIKE = new Set([":", "D"]);
-const stoneUrls = Object.entries(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }))
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([, src]) => src);
+const sortedUrls = (glob) =>
+  Object.entries(glob)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, src]) => src);
+const grassUrls = sortedUrls(import.meta.glob("./juego/pasto-*.png", { eager: true, import: "default", query: "?url" }));
+const flowerUrls = sortedUrls(import.meta.glob("./juego/flor-*.png", { eager: true, import: "default", query: "?url" }));
+const DECO_SCALE = 0.14;
+const stoneUrls = sortedUrls(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }));
 
 const loadImage = (src) =>
   new Promise((resolve, reject) => {
@@ -105,7 +110,12 @@ const drawPath = (g, art, seed) => {
 };
 
 const drawMap = (canvas, art = {}) => {
-  const { bush, tree } = art;
+  const { bush, tree, grass, flowers } = art;
+  const deco = (img, x, y) => {
+    const w = img.naturalWidth * DECO_SCALE;
+    const h = img.naturalHeight * DECO_SCALE;
+    g.drawImage(img, x - w / 2, y - h, w, h);
+  };
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = WORLD_W * dpr;
   canvas.height = WORLD_H * dpr;
@@ -124,7 +134,11 @@ const drawMap = (canvas, art = {}) => {
       const x = c * TILE;
       const y = r * TILE;
       const s = seed(c, r);
-      if (t === "." && s % 5 === 0) {
+      if (t === "." && flowers && (s >>> 9) % 19 === 0) {
+        deco(flowers[(s >>> 13) % flowers.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.8);
+      } else if (t === "." && grass && s % 4 === 0) {
+        deco(grass[(s >>> 6) % grass.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.75);
+      } else if (t === "." && !grass && s % 5 === 0) {
         g.lineWidth = 1.5;
         g.globalAlpha = 0.35;
         g.beginPath();
@@ -246,14 +260,14 @@ const heartCells = (kind) =>
 const HEART_LINE = heartCells("X");
 const HEART_FILL = heartCells("o");
 
-const Heart = ({ full = 1, className = "game-heart" }) => {
+const Heart = ({ full = 1, color = "hotpink", className = "game-heart" }) => {
   const clip = useId();
   return (
     <svg viewBox={`0 0 ${HEART_W} ${HEART_H}`} className={className} shapeRendering="crispEdges" aria-hidden="true">
       <clipPath id={clip}>
         <rect x="0" y="0" width={Math.round(HEART_W * full)} height={HEART_H} />
       </clipPath>
-      <g fill="hotpink" clipPath={`url(#${clip})`}>
+      <g fill={color} clipPath={`url(#${clip})`}>
         {HEART_FILL.map(({ x, y }) => (
           <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" />
         ))}
@@ -268,6 +282,7 @@ const Heart = ({ full = 1, className = "game-heart" }) => {
 };
 
 const HP_PER_HEART = 2;
+const ENEMY = "#8db600";
 
 const BossBar = ({ hp }) => (
   <div className="game-boss" aria-label={`manos: ${hp.map((h) => `${h} de ${HAND_HP}`).join(" y ")}`}>
@@ -277,7 +292,7 @@ const BossBar = ({ hp }) => (
           <Hand />
         </span>
         {Array.from({ length: HAND_HP / HP_PER_HEART }, (_, k) => (
-          <Heart key={k} className="game-heart game-heart-small" full={clamp(0, 1, (h - k * HP_PER_HEART) / HP_PER_HEART)} />
+          <Heart key={k} className="game-heart game-heart-small" color={ENEMY} full={clamp(0, 1, (h - k * HP_PER_HEART) / HP_PER_HEART)} />
         ))}
       </div>
     ))}
@@ -326,8 +341,12 @@ const Juego = () => {
 
   useLayoutEffect(() => {
     drawMap(map.current);
-    Promise.all([loadImage(arbusto), loadImage(arbol), loadImage(borde), Promise.all(stoneUrls.map(loadImage))])
-      .then(([bush, tree, edge, stones]) => map.current && drawMap(map.current, { bush, tree, edge, stones }))
+    const all = (urls) => Promise.all(urls.map(loadImage));
+    Promise.all([loadImage(arbusto), loadImage(arbol), loadImage(borde), all(stoneUrls), all(grassUrls), all(flowerUrls)])
+      .then(
+        ([bush, tree, edge, stones, grass, flowers]) =>
+          map.current && drawMap(map.current, { bush, tree, edge, stones, grass, flowers })
+      )
       .catch((error) => console.error(error));
   }, []);
 
