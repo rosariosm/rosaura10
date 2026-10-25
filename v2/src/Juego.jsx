@@ -40,6 +40,7 @@ const clamp = gsap.utils.clamp;
 const BUSH_SCALE = 1.2;
 const PATH_SCALE = 0.3;
 const STONE_SCALE = 0.2;
+const PATH_WIDEN = 9;
 const PATHLIKE = new Set([":", "D"]);
 const stoneUrls = Object.entries(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }))
   .sort(([a], [b]) => a.localeCompare(b))
@@ -55,9 +56,9 @@ const loadImage = (src) =>
 
 const drawPath = (g, art, seed) => {
   const { edge, stones } = art;
-  const segH = TILE + 4;
-  const srcH = segH / PATH_SCALE;
   const w = edge.naturalWidth * PATH_SCALE;
+  const o = PATH_WIDEN;
+  const isPath = (c, r) => PATHLIKE.has(MAP[r]?.[c]);
   const sides = [
     [0, -1, Math.PI / 2],
     [1, 0, Math.PI],
@@ -71,19 +72,30 @@ const drawPath = (g, art, seed) => {
       const cx = (c + 0.5) * TILE;
       const cy = (r + 0.5) * TILE;
       if (s % 3 === 0) {
-        const stone = stones[s % stones.length];
+        const stone = stones[(s >>> 5) % stones.length];
         const sw = stone.naturalWidth * STONE_SCALE;
         const sh = stone.naturalHeight * STONE_SCALE;
-        g.drawImage(stone, cx - sw / 2 + ((s >> 3) % 15) - 7, cy - sh / 2 + ((s >> 7) % 15) - 7, sw, sh);
+        g.drawImage(stone, cx - sw / 2 + ((s >>> 3) % 15) - 7, cy - sh / 2 + ((s >>> 7) % 15) - 7, sw, sh);
       }
       sides.forEach(([dx, dy, angle], k) => {
-        const n = MAP[r + dy]?.[c + dx];
-        if (n === undefined || PATHLIKE.has(n)) return;
+        if (MAP[r + dy]?.[c + dx] === undefined || isPath(c + dx, r + dy)) return;
+        const tx = Math.round(-Math.sin(angle));
+        const ty = Math.round(Math.cos(angle));
+        const reach = (sign) => {
+          const pc = c + tx * sign;
+          const pr = r + ty * sign;
+          if (!isPath(pc, pr)) return o;
+          return isPath(pc + dx, pr + dy) ? -o : 0.5;
+        };
+        const before = reach(-1);
+        const after = reach(1);
+        const segH = TILE + before + after;
+        const srcH = segH / PATH_SCALE;
         const sy = (s * 7 + k * 131) % Math.max(1, edge.naturalHeight - srcH);
         g.save();
         g.translate(cx, cy);
         g.rotate(angle);
-        g.drawImage(edge, 0, sy, edge.naturalWidth, srcH, -TILE / 2 - w / 2, -segH / 2, w, segH);
+        g.drawImage(edge, 0, sy, edge.naturalWidth, srcH, -TILE / 2 - o - w / 2, -TILE / 2 - before, w, segH);
         g.restore();
       });
     });
@@ -297,7 +309,7 @@ const Juego = () => {
     drawMap(map.current);
     Promise.all([loadImage(arbusto), loadImage(borde), Promise.all(stoneUrls.map(loadImage))])
       .then(([bush, edge, stones]) => map.current && drawMap(map.current, { bush, edge, stones }))
-      .catch(() => {});
+      .catch((error) => console.error(error));
   }, []);
 
   useLayoutEffect(() => {
