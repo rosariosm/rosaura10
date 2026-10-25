@@ -1,6 +1,7 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
+import arbol from "./juego/arbol.png";
 import arbusto from "./juego/arbusto.png";
 import borde from "./juego/borde.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
@@ -38,6 +39,7 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = gsap.utils.clamp;
 
 const BUSH_SCALE = 1.2;
+const TREE_SCALE = 1.55;
 const PATH_SCALE = 0.3;
 const STONE_SCALE = 0.2;
 const PATH_WIDEN = 9;
@@ -103,7 +105,7 @@ const drawPath = (g, art, seed) => {
 };
 
 const drawMap = (canvas, art = {}) => {
-  const { bush } = art;
+  const { bush, tree } = art;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = WORLD_W * dpr;
   canvas.height = WORLD_H * dpr;
@@ -149,7 +151,15 @@ const drawMap = (canvas, art = {}) => {
         g.arc(x + 22, y + 22, 1.5, 0, Math.PI * 2);
         g.fill();
       }
-      if (t === "#" && bush) {
+      if (t === "#" && tree && (s >>> 4) % 5 < 2) {
+        const w = TILE * TREE_SCALE;
+        const h = (w * tree.naturalHeight) / tree.naturalWidth;
+        g.save();
+        g.translate(x + TILE / 2, y + TILE);
+        if (s % 2) g.scale(-1, 1);
+        g.drawImage(tree, -w / 2, -h + 4, w, h);
+        g.restore();
+      } else if (t === "#" && bush) {
         const w = TILE * BUSH_SCALE;
         const h = (w * bush.naturalHeight) / bush.naturalWidth;
         g.save();
@@ -307,8 +317,8 @@ const Juego = () => {
 
   useLayoutEffect(() => {
     drawMap(map.current);
-    Promise.all([loadImage(arbusto), loadImage(borde), Promise.all(stoneUrls.map(loadImage))])
-      .then(([bush, edge, stones]) => map.current && drawMap(map.current, { bush, edge, stones }))
+    Promise.all([loadImage(arbusto), loadImage(arbol), loadImage(borde), Promise.all(stoneUrls.map(loadImage))])
+      .then(([bush, tree, edge, stones]) => map.current && drawMap(map.current, { bush, tree, edge, stones }))
       .catch((error) => console.error(error));
   }, []);
 
