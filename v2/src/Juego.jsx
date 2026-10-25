@@ -1,6 +1,7 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
+import arbusto from "./juego/arbusto.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
 
 const LINE = "#e9e6e1";
@@ -35,7 +36,9 @@ const blocked = (x, y, r) =>
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = gsap.utils.clamp;
 
-const drawMap = (canvas) => {
+const BUSH_SCALE = 1.2;
+
+const drawMap = (canvas, bush) => {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = WORLD_W * dpr;
   canvas.height = WORLD_H * dpr;
@@ -80,7 +83,15 @@ const drawMap = (canvas) => {
         g.arc(x + 22, y + 22, 1.5, 0, Math.PI * 2);
         g.fill();
       }
-      if (t === "#") {
+      if (t === "#" && bush) {
+        const w = TILE * BUSH_SCALE;
+        const h = (w * bush.naturalHeight) / bush.naturalWidth;
+        g.save();
+        g.translate(x + TILE / 2, y + TILE / 2);
+        if (s % 2) g.scale(-1, 1);
+        g.drawImage(bush, -w / 2, -h / 2 - 2, w, h);
+        g.restore();
+      } else if (t === "#") {
         g.lineWidth = 2.5;
         g.beginPath();
         g.arc(x + 22, y + 18, 15, 0, Math.PI * 2);
@@ -230,6 +241,9 @@ const Juego = () => {
 
   useLayoutEffect(() => {
     drawMap(map.current);
+    const bush = new Image();
+    bush.onload = () => map.current && drawMap(map.current, bush);
+    bush.src = arbusto;
   }, []);
 
   useLayoutEffect(() => {
