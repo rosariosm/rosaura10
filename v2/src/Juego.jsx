@@ -62,11 +62,32 @@ const loadImage = (src) =>
     img.src = src;
   });
 
+const LEVELS = { ground: 0.42, stones: 0.5, deco: 0.45, plants: 0.78, house: 0.7 };
+const PATH_TONE = "#161616";
+
+const tint = (img, level) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const g = canvas.getContext("2d");
+  g.drawImage(img, 0, 0);
+  g.globalCompositeOperation = "source-atop";
+  g.fillStyle = `rgb(0 0 0 / ${1 - level})`;
+  g.fillRect(0, 0, canvas.width, canvas.height);
+  return Object.assign(canvas, { naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
+};
+
 const drawPath = (g, art, seed) => {
   const { edge, stones } = art;
   const w = edge.naturalWidth * PATH_SCALE;
   const o = PATH_WIDEN;
   const isPath = (c, r) => PATHLIKE.has(MAP[r]?.[c]);
+  g.fillStyle = PATH_TONE;
+  MAP.forEach((row, r) =>
+    [...row].forEach((t, c) => {
+      if (t === ":") g.fillRect(c * TILE - o, r * TILE - o, TILE + o * 2, TILE + o * 2);
+    })
+  );
   const sides = [
     [0, -1, Math.PI / 2],
     [1, 0, Math.PI],
@@ -204,6 +225,7 @@ const drawMap = (canvas, art = {}) => {
   const hw = (house.c1 - house.c0 + 1) * TILE;
   const hh = (house.r1 - house.r0 + 1) * TILE;
   g.lineWidth = 3;
+  g.globalAlpha = LEVELS.house;
   g.strokeRect(hx + 4, hy + hh * 0.35, hw - 8, hh * 0.65 - 2);
   g.beginPath();
   g.moveTo(hx - 6, hy + hh * 0.38);
@@ -334,7 +356,15 @@ const Juego = () => {
     Promise.all([loadImage(arbusto), loadImage(arbol), loadImage(borde), all(stoneUrls), all(grassUrls), all(flowerUrls)])
       .then(
         ([bush, tree, edge, stones, grass, flowers]) =>
-          map.current && drawMap(map.current, { bush, tree, edge, stones, grass, flowers })
+          map.current &&
+          drawMap(map.current, {
+            bush: tint(bush, LEVELS.plants),
+            tree: tint(tree, LEVELS.plants),
+            edge: tint(edge, LEVELS.ground),
+            stones: stones.map((img) => tint(img, LEVELS.stones)),
+            grass: grass.map((img) => tint(img, LEVELS.deco)),
+            flowers: flowers.map((img) => tint(img, LEVELS.deco)),
+          })
       )
       .catch((error) => console.error(error));
   }, []);
@@ -663,14 +693,14 @@ const Juego = () => {
       let ox = 0;
       let oy = 0;
       if (s.scene === "world") {
-        ox = WORLD_W > vw ? clamp(0, WORLD_W - vw, h.x - vw / 2) : (WORLD_W - vw) / 2;
-        oy = WORLD_H > vh ? clamp(0, WORLD_H - vh, h.y - vh / 2) : (WORLD_H - vh) / 2;
+        ox = Math.round(WORLD_W > vw ? clamp(0, WORLD_W - vw, h.x - vw / 2) : (WORLD_W - vw) / 2);
+        oy = Math.round(WORLD_H > vh ? clamp(0, WORLD_H - vh, h.y - vh / 2) : (WORLD_H - vh) / 2);
         world.current.style.transform = `translate(${-ox}px, ${-oy}px)`;
       }
       const angle = Math.atan2(h.fy, h.fx);
       const blink = h.hurt > 0 && Math.floor(time * 16) % 2 === 0;
       const heroEl = hero.current;
-      heroEl.style.transform = `translate(${h.x - ox}px, ${h.y - oy}px)`;
+      heroEl.style.transform = `translate(${Math.round(h.x - ox)}px, ${Math.round(h.y - oy)}px)`;
       heroEl.style.opacity = blink ? 0.25 : 1;
       heroEl.style.setProperty("--face", `${angle}rad`);
       heroEl.classList.toggle("charged", s.canThrow && s.charge >= CHARGE);
