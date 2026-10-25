@@ -759,6 +759,42 @@ button {
   font-size: 0.75rem;
 }
 
+.game-boss {
+  position: absolute;
+  top: 1.4rem;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  gap: 1.5rem;
+  transform: translateX(-50%);
+}
+
+.game-boss-hand {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: opacity 0.4s;
+}
+
+.game-boss-hand.dead {
+  opacity: 0.3;
+}
+
+.game-boss-icon {
+  display: block;
+  width: 26px;
+  margin-right: 4px;
+}
+
+.game-boss-icon svg {
+  display: block;
+  width: 100%;
+}
+
+.game-heart-small {
+  width: 18px;
+}
+
 .game-dialog:has(~ .game-pad) {
   bottom: calc(4.5rem + 140px);
 }
@@ -766,5 +802,18 @@ button {
 @media (max-aspect-ratio: 3/4) {
   .game-note {
     display: none;
+  }
+
+  .game-boss {
+    top: 5.6rem;
+    gap: 0.8rem;
+  }
+
+  .game-heart-small {
+    width: 15px;
+  }
+
+  .game-boss-icon {
+    width: 20px;
   }
 }

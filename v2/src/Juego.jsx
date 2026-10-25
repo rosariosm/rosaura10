@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
@@ -156,15 +156,36 @@ const SwordIcon = ({ better }) => (
   </svg>
 );
 
-const Heart = ({ full }) => (
-  <svg viewBox="0 0 24 22" className="game-heart" aria-hidden="true">
-    <path
-      d="M12 20 C4 14 2 10 2 7 A5 5 0 0 1 12 5 A5 5 0 0 1 22 7 C22 10 20 14 12 20 Z"
-      fill={full ? "hotpink" : "none"}
-      stroke={LINE}
-      strokeWidth="2"
-    />
-  </svg>
+const HEART_PATH = "M12 20 C4 14 2 10 2 7 A5 5 0 0 1 12 5 A5 5 0 0 1 22 7 C22 10 20 14 12 20 Z";
+
+const Heart = ({ full = 1, className = "game-heart" }) => {
+  const clip = useId();
+  return (
+    <svg viewBox="0 0 24 22" className={className} aria-hidden="true">
+      <clipPath id={clip}>
+        <rect x="0" y="0" width={24 * full} height="22" />
+      </clipPath>
+      <path d={HEART_PATH} fill="hotpink" clipPath={`url(#${clip})`} />
+      <path d={HEART_PATH} fill="none" stroke={LINE} strokeWidth="2" />
+    </svg>
+  );
+};
+
+const HP_PER_HEART = 2;
+
+const BossBar = ({ hp }) => (
+  <div className="game-boss" aria-label={`manos: ${hp.map((h) => `${h} de ${HAND_HP}`).join(" y ")}`}>
+    {hp.map((h, i) => (
+      <div key={i} className={`game-boss-hand${h <= 0 ? " dead" : ""}`}>
+        <span className="game-boss-icon" style={{ transform: i ? "scaleX(-1)" : undefined }}>
+          <Hand />
+        </span>
+        {Array.from({ length: HAND_HP / HP_PER_HEART }, (_, k) => (
+          <Heart key={k} className="game-heart game-heart-small" full={clamp(0, 1, (h - k * HP_PER_HEART) / HP_PER_HEART)} />
+        ))}
+      </div>
+    ))}
+  </div>
 );
 
 const Hand = () => (
@@ -202,6 +223,7 @@ const Juego = () => {
   const [dialog, setDialog] = useState(null);
   const [scene, setScene] = useState("world");
   const [end, setEnd] = useState(null);
+  const [bossHp, setBossHp] = useState([HAND_HP, HAND_HP]);
   const [touch] = useState(() => window.matchMedia("(pointer: coarse)").matches);
   const game = useRef(null);
   const spot = useRef(SWORD_SPOTS[Math.floor(Math.random() * SWORD_SPOTS.length)]);
@@ -321,6 +343,7 @@ const Juego = () => {
       s.hero.y = r.y1 - 50;
       s.hero.fx = 0;
       s.hero.fy = -1;
+      setBossHp([HAND_HP, HAND_HP]);
       s.hands = [-1, 1].map((side) => ({
         x: (r.x0 + r.x1) / 2 + side * (r.x1 - r.x0) * 0.25,
         y: r.y0 + 60,
@@ -358,7 +381,8 @@ const Juego = () => {
 
     const hitHand = (hand, damage, from) => {
       if (hand.dead) return;
-      hand.hp -= damage;
+      hand.hp = Math.max(0, hand.hp - damage);
+      setBossHp(s.hands.map((h) => h.hp));
       hand.flash = 0.25;
       const d = Math.hypot(hand.x - from.x, hand.y - from.y) || 1;
       hand.x += ((hand.x - from.x) / d) * 30;
@@ -685,12 +709,13 @@ const Juego = () => {
         </div>
         {HEARTS.map((p, i) => (
           <div key={i} className="game-item" ref={(el) => (heartItems.current[i] = el)} style={{ left: center(p).x, top: center(p).y }}>
-            <Heart full />
+            <Heart />
           </div>
         ))}
       </div>
       <div className="game-room" ref={room} style={{ visibility: scene === "boss" ? "visible" : "hidden" }}>
         {scene === "boss" && <div className="game-room-floor" style={roomStyle(game.current?.room)} />}
+        {scene === "boss" && <BossBar hp={bossHp} />}
         {[0, 1].map((i) => (
           <div key={i} className="game-hand" ref={(el) => (hands.current[i] = el)}>
             <Hand />
@@ -705,7 +730,7 @@ const Juego = () => {
       <div className="game-hud" aria-live="polite">
         <div className="game-hearts" aria-label={`${hud.hp} de ${hud.max} corazones`}>
           {Array.from({ length: hud.max }, (_, i) => (
-            <Heart key={i} full={i < hud.hp} />
+            <Heart key={i} full={i < hud.hp ? 1 : 0} />
           ))}
         </div>
         <p className="game-status">
