@@ -39,6 +39,7 @@ const clamp = gsap.utils.clamp;
 
 const BUSH_SCALE = 1.2;
 const PATH_SCALE = 0.3;
+const STONE_SCALE = 0.2;
 const PATHLIKE = new Set([":", "D"]);
 const stoneUrls = Object.entries(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }))
   .sort(([a], [b]) => a.localeCompare(b))
@@ -71,8 +72,8 @@ const drawPath = (g, art, seed) => {
       const cy = (r + 0.5) * TILE;
       if (s % 3 === 0) {
         const stone = stones[s % stones.length];
-        const sw = stone.naturalWidth * PATH_SCALE;
-        const sh = stone.naturalHeight * PATH_SCALE;
+        const sw = stone.naturalWidth * STONE_SCALE;
+        const sh = stone.naturalHeight * STONE_SCALE;
         g.drawImage(stone, cx - sw / 2 + ((s >> 3) % 15) - 7, cy - sh / 2 + ((s >> 7) % 15) - 7, sw, sh);
       }
       sides.forEach(([dx, dy, angle], k) => {
