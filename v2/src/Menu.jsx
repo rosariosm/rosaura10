@@ -126,6 +126,14 @@ const Dolphin = () => {
   );
 };
 
+const Sword = () => (
+  <svg className="mini-sword" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M9 31 L29 11 L33 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    <path d="M7 23 L17 33" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    <path d="M6 34 L10 30" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
 const Underline = () => (
   <svg className="menu-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true">
     <path d="M2 5 C 18 2, 30 7, 46 4 S 78 2, 98 5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
@@ -135,6 +143,7 @@ const Underline = () => (
 const ITEMS = [
   { key: "pelos", label: "pelos", Icon: Leg },
   { key: "delfin", label: "delfín", Icon: Dolphin },
+  { key: "juego", label: "juego", Icon: Sword },
 ];
 
 const Menu = ({ page }) => (

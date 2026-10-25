@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Delfin from "./Delfin";
+import Juego from "./Juego";
 import Menu from "./Menu";
 import Pelos from "./Pelos";
 
@@ -10,6 +11,7 @@ const V1 = "/rosaura10/v1/";
 const PAGES = {
   pelos: Pelos,
   delfin: Delfin,
+  juego: Juego,
 };
 
 const fromHash = () => {
