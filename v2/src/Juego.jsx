@@ -134,9 +134,9 @@ const drawMap = (canvas, art = {}) => {
       const x = c * TILE;
       const y = r * TILE;
       const s = seed(c, r);
-      if (t === "." && flowers && (s >>> 9) % 19 === 0) {
+      if (t === "." && flowers && (s >>> 9) % 41 === 0) {
         deco(flowers[(s >>> 13) % flowers.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.8);
-      } else if (t === "." && grass && s % 4 === 0) {
+      } else if (t === "." && grass && s % 9 === 0) {
         deco(grass[(s >>> 6) % grass.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.75);
       } else if (t === "." && !grass && s % 5 === 0) {
         g.lineWidth = 1.5;
@@ -181,19 +181,6 @@ const drawMap = (canvas, art = {}) => {
         g.moveTo(x + 22, y + 33);
         g.lineTo(x + 22, y + 42);
         g.stroke();
-      }
-      if (t === "~") {
-        g.lineWidth = 1.5;
-        g.globalAlpha = 0.7;
-        for (let k = 0; k < 2; k++) {
-          const yy = y + 14 + k * 16;
-          g.beginPath();
-          g.moveTo(x + 4, yy);
-          g.quadraticCurveTo(x + 13, yy - 5, x + 22, yy);
-          g.quadraticCurveTo(x + 31, yy + 5, x + 40, yy);
-          g.stroke();
-        }
-        g.globalAlpha = 1;
       }
     });
   });
