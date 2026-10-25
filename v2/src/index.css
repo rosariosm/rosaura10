@@ -633,7 +633,7 @@ button {
 }
 
 .game-heart {
-  width: 22px;
+  width: 28px;
 }
 
 .game-sword-icon {
@@ -792,7 +792,7 @@ button {
 }
 
 .game-heart-small {
-  width: 18px;
+  width: 22px;
 }
 
 .game-dialog:has(~ .game-pad) {
@@ -810,7 +810,7 @@ button {
   }
 
   .game-heart-small {
-    width: 15px;
+    width: 17px;
   }
 
   .game-boss-icon {

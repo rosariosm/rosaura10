@@ -228,17 +228,41 @@ const SwordIcon = ({ better }) => (
   </svg>
 );
 
-const HEART_PATH = "M12 20 C4 14 2 10 2 7 A5 5 0 0 1 12 5 A5 5 0 0 1 22 7 C22 10 20 14 12 20 Z";
+const HEART_PIXELS = [
+  ".XXX...XXX.",
+  "XoooX.XoooX",
+  "XoooooooooX",
+  "XoooooooooX",
+  ".XoooooooX.",
+  "..XoooooX..",
+  "...XoooX...",
+  "....XoX....",
+  ".....X.....",
+];
+const HEART_W = HEART_PIXELS[0].length;
+const HEART_H = HEART_PIXELS.length;
+const heartCells = (kind) =>
+  HEART_PIXELS.flatMap((row, y) => [...row].map((p, x) => (p === kind ? { x, y } : null))).filter(Boolean);
+const HEART_LINE = heartCells("X");
+const HEART_FILL = heartCells("o");
 
 const Heart = ({ full = 1, className = "game-heart" }) => {
   const clip = useId();
   return (
-    <svg viewBox="0 0 24 22" className={className} aria-hidden="true">
+    <svg viewBox={`0 0 ${HEART_W} ${HEART_H}`} className={className} shapeRendering="crispEdges" aria-hidden="true">
       <clipPath id={clip}>
-        <rect x="0" y="0" width={24 * full} height="22" />
+        <rect x="0" y="0" width={Math.round(HEART_W * full)} height={HEART_H} />
       </clipPath>
-      <path d={HEART_PATH} fill="hotpink" clipPath={`url(#${clip})`} />
-      <path d={HEART_PATH} fill="none" stroke={LINE} strokeWidth="2" />
+      <g fill="hotpink" clipPath={`url(#${clip})`}>
+        {HEART_FILL.map(({ x, y }) => (
+          <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" />
+        ))}
+      </g>
+      <g fill={LINE}>
+        {HEART_LINE.map(({ x, y }) => (
+          <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" />
+        ))}
+      </g>
     </svg>
   );
 };
