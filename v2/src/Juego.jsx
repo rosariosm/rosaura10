@@ -2,6 +2,7 @@ import { useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import arbusto from "./juego/arbusto.png";
+import borde from "./juego/borde.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
 
 const LINE = "#e9e6e1";
@@ -37,8 +38,59 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const clamp = gsap.utils.clamp;
 
 const BUSH_SCALE = 1.2;
+const PATH_SCALE = 0.3;
+const PATHLIKE = new Set([":", "D"]);
+const stoneUrls = Object.entries(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, src]) => src);
 
-const drawMap = (canvas, bush) => {
+const loadImage = (src) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+const drawPath = (g, art, seed) => {
+  const { edge, stones } = art;
+  const segH = TILE + 4;
+  const srcH = segH / PATH_SCALE;
+  const w = edge.naturalWidth * PATH_SCALE;
+  const sides = [
+    [0, -1, Math.PI / 2],
+    [1, 0, Math.PI],
+    [0, 1, -Math.PI / 2],
+    [-1, 0, 0],
+  ];
+  MAP.forEach((row, r) => {
+    [...row].forEach((t, c) => {
+      if (t !== ":") return;
+      const s = seed(c, r);
+      const cx = (c + 0.5) * TILE;
+      const cy = (r + 0.5) * TILE;
+      if (s % 3 === 0) {
+        const stone = stones[s % stones.length];
+        const sw = stone.naturalWidth * PATH_SCALE;
+        const sh = stone.naturalHeight * PATH_SCALE;
+        g.drawImage(stone, cx - sw / 2 + ((s >> 3) % 15) - 7, cy - sh / 2 + ((s >> 7) % 15) - 7, sw, sh);
+      }
+      sides.forEach(([dx, dy, angle], k) => {
+        const n = MAP[r + dy]?.[c + dx];
+        if (n === undefined || PATHLIKE.has(n)) return;
+        const sy = (s * 7 + k * 131) % Math.max(1, edge.naturalHeight - srcH);
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(angle);
+        g.drawImage(edge, 0, sy, edge.naturalWidth, srcH, -TILE / 2 - w / 2, -segH / 2, w, segH);
+        g.restore();
+      });
+    });
+  });
+};
+
+const drawMap = (canvas, art = {}) => {
+  const { bush } = art;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = WORLD_W * dpr;
   canvas.height = WORLD_H * dpr;
@@ -51,6 +103,7 @@ const drawMap = (canvas, bush) => {
   g.lineCap = "round";
   g.lineJoin = "round";
   const seed = (c, r) => ((c * 73856093) ^ (r * 19349663)) >>> 0;
+  if (art.edge) drawPath(g, art, seed);
   MAP.forEach((row, r) => {
     [...row].forEach((t, c) => {
       const x = c * TILE;
@@ -67,7 +120,7 @@ const drawMap = (canvas, bush) => {
         g.stroke();
         g.globalAlpha = 1;
       }
-      if (t === ":") {
+      if (t === ":" && !art.edge) {
         g.globalAlpha = 0.22;
         g.fillRect(x, y, TILE, TILE);
         g.globalAlpha = 0.5;
@@ -241,9 +294,9 @@ const Juego = () => {
 
   useLayoutEffect(() => {
     drawMap(map.current);
-    const bush = new Image();
-    bush.onload = () => map.current && drawMap(map.current, bush);
-    bush.src = arbusto;
+    Promise.all([loadImage(arbusto), loadImage(borde), Promise.all(stoneUrls.map(loadImage))])
+      .then(([bush, edge, stones]) => map.current && drawMap(map.current, { bush, edge, stones }))
+      .catch(() => {});
   }, []);
 
   useLayoutEffect(() => {
