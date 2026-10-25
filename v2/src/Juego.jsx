@@ -51,6 +51,7 @@ const sortedUrls = (glob) =>
 const grassUrls = sortedUrls(import.meta.glob("./juego/pasto-*.png", { eager: true, import: "default", query: "?url" }));
 const flowerUrls = sortedUrls(import.meta.glob("./juego/flor-*.png", { eager: true, import: "default", query: "?url" }));
 const DECO_SCALE = 0.14;
+const GRASS_SCALE = 0.1;
 const stoneUrls = sortedUrls(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }));
 
 const loadImage = (src) =>
@@ -111,9 +112,9 @@ const drawPath = (g, art, seed) => {
 
 const drawMap = (canvas, art = {}) => {
   const { bush, tree, grass, flowers } = art;
-  const deco = (img, x, y) => {
-    const w = img.naturalWidth * DECO_SCALE;
-    const h = img.naturalHeight * DECO_SCALE;
+  const deco = (img, x, y, scale = DECO_SCALE) => {
+    const w = img.naturalWidth * scale;
+    const h = img.naturalHeight * scale;
     g.drawImage(img, x - w / 2, y - h, w, h);
   };
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -137,8 +138,8 @@ const drawMap = (canvas, art = {}) => {
       const open = t === "." && ![-1, 0, 1].some((dy) => [-1, 0, 1].some((dx) => PATHLIKE.has(MAP[r + dy]?.[c + dx])));
       if (open && flowers && (s >>> 9) % 41 === 0) {
         deco(flowers[(s >>> 13) % flowers.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.8);
-      } else if (open && grass && s % 9 === 0) {
-        deco(grass[(s >>> 6) % grass.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.75);
+      } else if (open && grass && s % 15 === 0) {
+        deco(grass[(s >>> 6) % grass.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.75, GRASS_SCALE);
       } else if (open && !grass && s % 5 === 0) {
         g.lineWidth = 1.5;
         g.globalAlpha = 0.35;
