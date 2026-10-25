@@ -134,11 +134,12 @@ const drawMap = (canvas, art = {}) => {
       const x = c * TILE;
       const y = r * TILE;
       const s = seed(c, r);
-      if (t === "." && flowers && (s >>> 9) % 41 === 0) {
+      const open = t === "." && ![-1, 0, 1].some((dy) => [-1, 0, 1].some((dx) => PATHLIKE.has(MAP[r + dy]?.[c + dx])));
+      if (open && flowers && (s >>> 9) % 41 === 0) {
         deco(flowers[(s >>> 13) % flowers.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.8);
-      } else if (t === "." && grass && s % 9 === 0) {
+      } else if (open && grass && s % 9 === 0) {
         deco(grass[(s >>> 6) % grass.length], x + TILE / 2 + ((s >>> 3) % 11) - 5, y + TILE * 0.75);
-      } else if (t === "." && !grass && s % 5 === 0) {
+      } else if (open && !grass && s % 5 === 0) {
         g.lineWidth = 1.5;
         g.globalAlpha = 0.35;
         g.beginPath();
