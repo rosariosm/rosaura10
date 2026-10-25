@@ -142,16 +142,7 @@ const drawMap = (canvas, art = {}) => {
         g.fillRect(x + 8 + (s % 20), y + 10 + (s % 17), 3, 3);
         g.globalAlpha = 1;
       }
-      if (t === "f") {
-        g.lineWidth = 1.5;
-        g.beginPath();
-        g.arc(x + 22, y + 22, 5, 0, Math.PI * 2);
-        g.stroke();
-        g.beginPath();
-        g.arc(x + 22, y + 22, 1.5, 0, Math.PI * 2);
-        g.fill();
-      }
-      if (t === "#" && tree && (s >>> 4) % 5 < 2) {
+      if (t === "#" && tree) {
         const w = TILE * TREE_SCALE;
         const h = (w * tree.naturalHeight) / tree.naturalWidth;
         g.save();
@@ -159,7 +150,7 @@ const drawMap = (canvas, art = {}) => {
         if (s % 2) g.scale(-1, 1);
         g.drawImage(tree, -w / 2, -h + 4, w, h);
         g.restore();
-      } else if (t === "#" && bush) {
+      } else if (t === "b" && bush) {
         const w = TILE * BUSH_SCALE;
         const h = (w * bush.naturalHeight) / bush.naturalWidth;
         g.save();
@@ -167,7 +158,7 @@ const drawMap = (canvas, art = {}) => {
         if (s % 2) g.scale(-1, 1);
         g.drawImage(bush, -w / 2, -h / 2 - 2, w, h);
         g.restore();
-      } else if (t === "#") {
+      } else if (t === "#" || t === "b") {
         g.lineWidth = 2.5;
         g.beginPath();
         g.arc(x + 22, y + 18, 15, 0, Math.PI * 2);
@@ -175,12 +166,6 @@ const drawMap = (canvas, art = {}) => {
         g.beginPath();
         g.moveTo(x + 22, y + 33);
         g.lineTo(x + 22, y + 42);
-        g.stroke();
-      }
-      if (t === "r") {
-        g.lineWidth = 2.5;
-        g.beginPath();
-        g.ellipse(x + 22, y + 26, 16, 12, 0, 0, Math.PI * 2);
         g.stroke();
       }
       if (t === "~") {
