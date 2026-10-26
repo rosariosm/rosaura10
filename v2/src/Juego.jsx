@@ -812,6 +812,7 @@ const Juego = () => {
       keys.current.y = (held.has("y1") ? 1 : 0) - (held.has("y-1") ? 1 : 0);
     };
     const down = (e) => {
+      if (s.ended) return;
       const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       if (KEYS[k]) {
         e.preventDefault();
@@ -943,7 +944,7 @@ const Juego = () => {
       {end && (
         <div className="game-end">
           <p>{end === "win" ? "¡Ganaste! Los pies se fueron." : "Los pies te atraparon."}</p>
-          <button type="button" className="game-retry" onClick={retry}>
+          <button type="button" className="game-retry" onClick={retry} autoFocus>
             {end === "win" ? "seguir paseando" : "otra vez"}
           </button>
         </div>
