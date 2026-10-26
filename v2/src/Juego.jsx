@@ -2,6 +2,8 @@ import { useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import arbol from "./juego/arbol.png";
+import pie1 from "./juego/pie-1.png";
+import pie2 from "./juego/pie-2.png";
 import arbusto from "./juego/arbusto.png";
 import borde from "./juego/borde.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
@@ -16,8 +18,14 @@ const REACH = 36;
 const CHARGE = 0.7;
 const THROW_SPEED = 560;
 const THROW_RANGE = 340;
-const HAND_R = 60;
-const HAND_HP = 8;
+const FOOT_R = 62;
+const FOOT_H = 200;
+const WHIP_TIME = 0.6;
+const WHIP_REACH = 260;
+const WINDUP_TIME = 0.75;
+const REST_TIME = 1.4;
+const WHIP_SPREAD = 0.35;
+const FOOT_HP = 8;
 const INVULNERABLE = 1.1;
 const START_HP = 3;
 
@@ -26,6 +34,21 @@ const ROWS = MAP.length;
 const WORLD_W = COLS * TILE;
 const WORLD_H = ROWS * TILE;
 
+const FEET = [pie1, pie2];
+const WHIP_ORIGINS = [
+  { x: -0.11, y: 0.32 },
+  { x: 0.3, y: 0.33 },
+];
+const whipOrigin = (foot, i) => ({
+  x: foot.x + WHIP_ORIGINS[i].x * FOOT_H * 0.6,
+  y: foot.y + WHIP_ORIGINS[i].y * FOOT_H,
+});
+const segmentDist = (p, a, b) => {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = clamp(0, 1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy || 1));
+  return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+};
 const center = ({ x, y }) => ({ x: (x + 0.5) * TILE, y: (y + 0.5) * TILE });
 const solidAt = (px, py) => {
   const c = Math.floor(px / TILE);
@@ -296,13 +319,13 @@ const HP_PER_HEART = 2;
 const ENEMY = "#8db600";
 
 const BossBar = ({ hp }) => (
-  <div className="game-boss" aria-label={`manos: ${hp.map((h) => `${h} de ${HAND_HP}`).join(" y ")}`}>
+  <div className="game-boss" aria-label={`pies: ${hp.map((h) => `${h} de ${FOOT_HP}`).join(" y ")}`}>
     {hp.map((h, i) => (
-      <div key={i} className={`game-boss-hand${h <= 0 ? " dead" : ""}`}>
-        <span className="game-boss-icon" style={{ transform: i ? "scaleX(-1)" : undefined }}>
-          <Hand />
+      <div key={i} className={`game-boss-foot${h <= 0 ? " dead" : ""}`}>
+        <span className="game-boss-icon">
+          <Foot i={i} />
         </span>
-        {Array.from({ length: HAND_HP / HP_PER_HEART }, (_, k) => (
+        {Array.from({ length: FOOT_HP / HP_PER_HEART }, (_, k) => (
           <Heart key={k} className="game-heart game-heart-small" color={ENEMY} full={clamp(0, 1, (h - k * HP_PER_HEART) / HP_PER_HEART)} />
         ))}
       </div>
@@ -310,21 +333,11 @@ const BossBar = ({ hp }) => (
   </div>
 );
 
-const Hand = () => (
-  <svg viewBox="0 0 100 90" className="game-hand-shape" aria-hidden="true">
-    <path
-      d="M30 8 Q50 0 62 10 L64 36 Q80 34 88 46 Q94 56 90 62 Q84 64 80 56 Q76 50 70 52 L74 64 Q78 74 72 78 Q66 78 62 70 L58 60 L54 74 Q52 82 46 80 Q40 78 42 68 L44 58 L36 70 Q32 76 26 72 Q22 66 28 58 L32 50 Q18 56 14 48 Q12 40 24 36 Z"
-      fill="#000"
-      stroke={LINE}
-      strokeWidth="3"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const Foot = ({ i }) => <img src={FEET[i]} className="game-foot-shape" alt="" draggable="false" />;
 
 const intro = [
   "¡Hola! Qué bueno verte por acá.",
-  "En la casa de arriba a la izquierda vive el malo: dos manos gigantes que te persiguen y te quieren encerrar.",
+  "En la casa de arriba a la izquierda vive el malo: dos pies gigantes y peludos que te persiguen, te encierran y te azotan con sus pelos.",
   "Antes de entrar, recorré el camino: buscá una espada mejor, aprendé a usarla y juntá corazones.",
   "Cuando estés lista o listo, entrá a la casa y peleá. ¡Suerte!",
 ];
@@ -338,14 +351,15 @@ const Juego = () => {
   const thrown = useRef();
   const swordItem = useRef();
   const heartItems = useRef([]);
-  const hands = useRef([]);
+  const feet = useRef([]);
+  const whips = useRef([]);
   const room = useRef();
   const keys = useRef({ x: 0, y: 0, action: false });
   const [hud, setHud] = useState({ hp: START_HP, max: START_HP, sword: "común", canThrow: false });
   const [dialog, setDialog] = useState(null);
   const [scene, setScene] = useState("world");
   const [end, setEnd] = useState(null);
-  const [bossHp, setBossHp] = useState([HAND_HP, HAND_HP]);
+  const [bossHp, setBossHp] = useState([FOOT_HP, FOOT_HP]);
   const [touch] = useState(() => window.matchMedia("(pointer: coarse)").matches);
   const game = useRef(null);
   const spot = useRef(SWORD_SPOTS[Math.floor(Math.random() * SWORD_SPOTS.length)]);
@@ -383,7 +397,7 @@ const Juego = () => {
       swordTaken: false,
       metGuide: false,
       hearts: HEARTS.map(() => false),
-      hands: [],
+      feet: [],
       dialog: null,
       ended: false,
     };
@@ -480,17 +494,18 @@ const Juego = () => {
       s.hero.y = r.y1 - 50;
       s.hero.fx = 0;
       s.hero.fy = -1;
-      setBossHp([HAND_HP, HAND_HP]);
-      s.hands = [-1, 1].map((side) => ({
+      setBossHp([FOOT_HP, FOOT_HP]);
+      s.feet = [-1, 1].map((side) => ({
         x: (r.x0 + r.x1) / 2 + side * (r.x1 - r.x0) * 0.25,
         y: r.y0 + 60,
         side,
-        hp: HAND_HP,
+        hp: FOOT_HP,
         state: "stalk",
         t: 0,
-        ring: 240,
-        vx: 0,
-        vy: 0,
+        ring: 260,
+        whips: null,
+        aim: 0,
+        reach: 0,
         flash: 0,
         dead: false,
       }));
@@ -500,7 +515,7 @@ const Juego = () => {
       s.scene = "boss";
       setScene("boss");
       setupBoss();
-      hands.current.forEach((el) => el && (el.style.opacity = 1));
+      feet.current.forEach((el) => el && gsap.set(el, { opacity: 1, scale: 1 }));
     };
 
     const hurtHero = (from) => {
@@ -516,23 +531,23 @@ const Juego = () => {
       }
     };
 
-    const hitHand = (hand, damage, from) => {
-      if (hand.dead) return;
-      hand.hp = Math.max(0, hand.hp - damage);
-      setBossHp(s.hands.map((h) => h.hp));
-      hand.flash = 0.25;
-      const d = Math.hypot(hand.x - from.x, hand.y - from.y) || 1;
-      hand.x += ((hand.x - from.x) / d) * 30;
-      hand.y += ((hand.y - from.y) / d) * 30;
-      if (hand.state === "lunge" || hand.state === "windup") {
-        hand.state = "rest";
-        hand.t = 0;
+    const hitFoot = (foot, damage, from) => {
+      if (foot.dead) return;
+      foot.hp = Math.max(0, foot.hp - damage);
+      setBossHp(s.feet.map((h) => h.hp));
+      foot.flash = 0.25;
+      const d = Math.hypot(foot.x - from.x, foot.y - from.y) || 1;
+      foot.x += ((foot.x - from.x) / d) * 30;
+      foot.y += ((foot.y - from.y) / d) * 30;
+      if (foot.state === "whip" || foot.state === "windup") {
+        foot.state = "rest";
+        foot.t = 0;
       }
-      if (hand.hp <= 0) {
-        hand.dead = true;
-        const el = hands.current[s.hands.indexOf(hand)];
+      if (foot.hp <= 0) {
+        foot.dead = true;
+        const el = feet.current[s.feet.indexOf(foot)];
         gsap.to(el, { opacity: 0, scale: 1.6, duration: 0.4 });
-        if (s.hands.every((h) => h.dead)) {
+        if (s.feet.every((h) => h.dead)) {
           s.ended = true;
           setTimeout(() => setEnd("win"), 600);
         }
@@ -600,11 +615,11 @@ const Juego = () => {
     const swingHits = () => {
       if (s.swing <= 0 || s.scene !== "boss") return;
       const tip = { x: s.hero.x + s.hero.fx * REACH, y: s.hero.y + s.hero.fy * REACH };
-      s.hands.forEach((hand) => {
-        if (hand.hitBy === s.swingId) return;
-        if (dist(tip, hand) < HAND_R + 22) {
-          hand.hitBy = s.swingId;
-          hitHand(hand, s.better ? 2 : 1, s.hero);
+      s.feet.forEach((foot) => {
+        if (foot.hitBy === s.swingId) return;
+        if (dist(tip, foot) < FOOT_R + 22) {
+          foot.hitBy = s.swingId;
+          hitFoot(foot, s.better ? 2 : 1, s.hero);
         }
       });
     };
@@ -628,61 +643,80 @@ const Juego = () => {
         t.y += ((s.hero.y - t.y) / d) * THROW_SPEED * 1.1 * dt;
       }
       if (s.scene === "boss") {
-        s.hands.forEach((hand) => {
-          if (t.hit.has(hand) || dist(t, hand) > HAND_R + 14) return;
-          t.hit.add(hand);
-          hitHand(hand, 2, t);
+        s.feet.forEach((foot) => {
+          if (t.hit.has(foot) || dist(t, foot) > FOOT_R + 14) return;
+          t.hit.add(foot);
+          hitFoot(foot, 2, t);
         });
       }
     };
 
-    const updateHands = (dt) => {
+    const updateFeet = (dt) => {
       const h = s.hero;
-      s.hands.forEach((hand) => {
-        if (hand.dead) return;
-        hand.t += dt;
-        hand.flash = Math.max(0, hand.flash - dt);
-        if (hand.state === "stalk") {
-          hand.ring = Math.max(80, hand.ring - 55 * dt);
-          const dx = h.x - hand.x;
-          const dy = h.y - hand.y;
+      s.feet.forEach((foot, i) => {
+        if (foot.dead) return;
+        foot.t += dt;
+        foot.flash = Math.max(0, foot.flash - dt);
+        if (foot.state === "stalk") {
+          foot.ring = Math.max(170, foot.ring - 45 * dt);
+          const dx = h.x - foot.x;
+          const dy = h.y - foot.y;
           const d = Math.hypot(dx, dy) || 1;
-          const px = (-dy / d) * hand.side;
-          const py = (dx / d) * hand.side;
-          const tx = h.x - (dx / d) * hand.ring * 0.6 + px * hand.ring;
-          const ty = h.y - (dy / d) * hand.ring * 0.6 + py * hand.ring;
-          const td = Math.hypot(tx - hand.x, ty - hand.y) || 1;
-          const sp = Math.min(150, td * 3);
-          hand.x += ((tx - hand.x) / td) * sp * dt;
-          hand.y += ((ty - hand.y) / td) * sp * dt;
-          if (hand.t > 2.6 + (hand.side > 0 ? 0.4 : 0)) {
-            hand.state = "windup";
-            hand.t = 0;
+          const px = (-dy / d) * foot.side;
+          const py = (dx / d) * foot.side;
+          const tx = h.x - (dx / d) * foot.ring * 0.6 + px * foot.ring;
+          const ty = h.y - (dy / d) * foot.ring * 0.6 + py * foot.ring;
+          const td = Math.hypot(tx - foot.x, ty - foot.y) || 1;
+          const sp = Math.min(120, td * 3);
+          foot.x += ((tx - foot.x) / td) * sp * dt;
+          foot.y += ((ty - foot.y) / td) * sp * dt;
+          if (foot.t > 2.4 + (foot.side > 0 ? 0.6 : 0)) {
+            const o = whipOrigin(foot, i);
+            foot.aim = Math.atan2(h.y - o.y, h.x - o.x);
+            foot.reach = clamp(140, WHIP_REACH, dist(o, h) + 40);
+            foot.state = "windup";
+            foot.t = 0;
           }
-        } else if (hand.state === "windup") {
-          if (hand.t > 0.5) {
-            const d = dist(h, hand) || 1;
-            hand.vx = ((h.x - hand.x) / d) * 560;
-            hand.vy = ((h.y - hand.y) / d) * 560;
-            hand.state = "lunge";
-            hand.t = 0;
+        } else if (foot.state === "windup") {
+          if (foot.t > WINDUP_TIME) {
+            const aim = foot.aim;
+            foot.whips = Math.random() < 0.5 ? [aim] : [aim - WHIP_SPREAD, aim, aim + WHIP_SPREAD];
+            foot.state = "whip";
+            foot.t = 0;
           }
-        } else if (hand.state === "lunge") {
-          hand.x += hand.vx * dt;
-          hand.y += hand.vy * dt;
-          if (hand.t > 0.38) {
-            hand.state = "rest";
-            hand.t = 0;
+        } else if (foot.state === "whip") {
+          const p = foot.t / WHIP_TIME;
+          if (p >= 1) {
+            foot.state = "rest";
+            foot.t = 0;
+          } else if (p > 0.2 && p < 0.8) {
+            const o = whipOrigin(foot, i);
+            const len = foot.reach * Math.sin(Math.PI * p);
+            foot.whips.forEach((a) => {
+              const tip = { x: o.x + Math.cos(a) * len, y: o.y + Math.sin(a) * len };
+              if (segmentDist(h, o, tip) < HERO_R + 4) hurtHero(o);
+            });
           }
-        } else if (hand.state === "rest" && hand.t > 1.1) {
-          hand.state = "stalk";
-          hand.t = 0;
-          hand.ring = 240;
+        } else if (foot.state === "rest" && foot.t > REST_TIME) {
+          foot.state = "stalk";
+          foot.t = 0;
+          foot.ring = 260;
+        }
+        const other = s.feet[1 - i];
+        if (!other.dead) {
+          const gap = dist(foot, other);
+          if (gap < FOOT_R * 2.2) {
+            const push = ((FOOT_R * 2.2 - gap) / 2) * Math.min(1, dt * 8);
+            const ux = gap ? (foot.x - other.x) / gap : i ? 1 : -1;
+            const uy = gap ? (foot.y - other.y) / gap : 0;
+            foot.x += ux * push;
+            foot.y += uy * push;
+          }
         }
         const r = s.room;
-        hand.x = clamp(r.x0 + HAND_R, r.x1 - HAND_R, hand.x);
-        hand.y = clamp(r.y0 + HAND_R, r.y1 - HAND_R, hand.y);
-        if (dist(hand, h) < HAND_R + HERO_R - 6) hurtHero(hand);
+        foot.x = clamp(r.x0 + FOOT_R, r.x1 - FOOT_R, foot.x);
+        foot.y = clamp(r.y0 + FOOT_R, r.y1 - FOOT_R, foot.y);
+        if (dist(foot, h) < FOOT_R + HERO_R - 10) hurtHero(foot);
       });
     };
 
@@ -713,14 +747,34 @@ const Juego = () => {
       const t = s.throwing;
       thrown.current.style.opacity = t ? 1 : 0;
       if (t) thrown.current.style.transform = `translate(${t.x - ox}px, ${t.y - oy}px) rotate(${time * 22}rad)`;
-      s.hands.forEach((hand, i) => {
-        const el = hands.current[i];
-        if (!el || hand.dead) return;
-        const shake = hand.state === "windup" ? Math.sin(time * 70) * 4 : 0;
-        const tilt = hand.side * 10 + (hand.state === "lunge" ? hand.side * -20 : 0);
-        el.style.transform = `translate(${hand.x + shake}px, ${hand.y}px) scaleX(${hand.side}) rotate(${tilt}deg)`;
-        el.classList.toggle("flash", hand.flash > 0);
-        el.classList.toggle("tired", hand.state === "rest");
+      s.feet.forEach((foot, i) => {
+        const el = feet.current[i];
+        if (!el) return;
+        const lines = whips.current.slice(i * 3, i * 3 + 3);
+        if (foot.dead) {
+          lines.forEach((line) => line.setAttribute("points", ""));
+          return;
+        }
+        const shake = foot.state === "windup" ? Math.sin(time * 70) * 4 : 0;
+        const sway = Math.sin(time * 2 + i * 2) * 4;
+        el.style.transform = `translate(${foot.x + shake}px, ${foot.y}px) rotate(${sway}deg)`;
+        el.classList.toggle("flash", foot.flash > 0);
+        el.classList.toggle("tired", foot.state === "rest");
+        const p = foot.state === "whip" ? foot.t / WHIP_TIME : 0;
+        lines.forEach((line, k) => {
+          const a = foot.whips?.[k];
+          if (!p || a === undefined) return line.setAttribute("points", "");
+          const o = whipOrigin(foot, i);
+          const len = foot.reach * Math.sin(Math.PI * p);
+          const nx = -Math.sin(a);
+          const ny = Math.cos(a);
+          const pts = Array.from({ length: 16 }, (_, j) => {
+            const f = j / 15;
+            const wave = Math.sin(f * 9 - time * 28 + k) * 7 * Math.sin(Math.PI * f);
+            return `${o.x + Math.cos(a) * len * f + nx * wave},${o.y + Math.sin(a) * len * f + ny * wave}`;
+          });
+          line.setAttribute("points", pts.join(" "));
+        });
       });
     };
 
@@ -733,7 +787,7 @@ const Juego = () => {
       moveHero(dt);
       if (!s.dialog && !s.ended) {
         if (s.scene === "world") pickups();
-        else updateHands(dt);
+        else updateFeet(dt);
         swingHits();
       }
       updateThrow(dt);
@@ -827,7 +881,7 @@ const Juego = () => {
   };
 
   return (
-    <section className="game" ref={root} aria-label="un mundo chiquito con una espada y dos manos malas">
+    <section className="game" ref={root} aria-label="un mundo chiquito con una espada y dos pies peludos malos">
       <div className="game-world" ref={world} style={{ width: WORLD_W, height: WORLD_H, visibility: scene === "world" ? "visible" : "hidden" }}>
         <canvas ref={map} className="game-map" style={{ width: WORLD_W, height: WORLD_H }} />
         {[
@@ -854,10 +908,15 @@ const Juego = () => {
         {scene === "boss" && <div className="game-room-floor" style={roomStyle(game.current?.room)} />}
         {scene === "boss" && <BossBar hp={bossHp} />}
         {[0, 1].map((i) => (
-          <div key={i} className="game-hand" ref={(el) => (hands.current[i] = el)}>
-            <Hand />
+          <div key={i} className="game-foot" ref={(el) => (feet.current[i] = el)}>
+            <Foot i={i} />
           </div>
         ))}
+        <svg className="game-whips" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, k) => (
+            <polyline key={k} ref={(el) => (whips.current[k] = el)} points="" />
+          ))}
+        </svg>
       </div>
       <div className="game-hero" ref={hero}>
         <span className="game-blade" ref={blade} />
@@ -883,7 +942,7 @@ const Juego = () => {
       )}
       {end && (
         <div className="game-end">
-          <p>{end === "win" ? "¡Ganaste! Las manos se fueron." : "Las manos te atraparon."}</p>
+          <p>{end === "win" ? "¡Ganaste! Los pies se fueron." : "Los pies te atraparon."}</p>
           <button type="button" className="game-retry" onClick={retry}>
             {end === "win" ? "seguir paseando" : "otra vez"}
           </button>
@@ -920,7 +979,7 @@ const Juego = () => {
         </div>
       )}
       <p className="game-note" lang="es">
-        mapa, personajes y manos provisorios: esperan tus dibujos
+        mapa y personajes provisorios: esperan tus dibujos
       </p>
     </section>
   );
