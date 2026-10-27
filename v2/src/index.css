@@ -697,7 +697,12 @@ button {
 
 .game-initial-lead {
   float: left;
-  margin-right: 0.1em;
+  margin: 1.5em 0.1em 0 0;
+}
+
+.game-illuminated-text {
+  display: block;
+  padding-top: 1.5em;
 }
 
 .game-initial {

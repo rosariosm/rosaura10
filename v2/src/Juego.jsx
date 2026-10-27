@@ -315,7 +315,7 @@ const Illuminated = ({ text }) => {
       <span aria-hidden="true">
         {lead && <span className="game-initial-lead">{lead}</span>}
         {letter && <Initial letter={letter} />}
-        {rest}
+        <span className="game-illuminated-text">{rest}</span>
       </span>
     </p>
   );
