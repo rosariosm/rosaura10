@@ -260,6 +260,67 @@ const drawMap = (canvas, art = {}) => {
   g.strokeRect(DOOR.x * TILE + 8, DOOR.y * TILE + 6, TILE - 16, TILE - 6);
 };
 
+const LETTERS = Object.fromEntries(
+  Object.entries(import.meta.glob("./juego/letras/*.png", { eager: true, import: "default", query: "?url" })).map(
+    ([path, src]) => [path.slice(path.lastIndexOf("/") + 1, -4).toUpperCase(), src]
+  )
+);
+
+const splitInitial = (text) => {
+  const m = text.match(/^([¡¿"«]*)(\p{L})(.*)$/su);
+  return m ? { lead: m[1], letter: m[2], rest: m[3] } : { lead: "", letter: "", rest: text };
+};
+
+const Initial = ({ letter }) => {
+  const art = LETTERS[letter.normalize("NFD").replace(/\p{M}/gu, "").toUpperCase()];
+  if (art) return <img className="game-initial" src={art} alt="" />;
+  return (
+    <span className="game-initial" aria-hidden="true">
+      <svg viewBox="0 0 100 100" className="game-initial-frame">
+        <rect x="4" y="4" width="92" height="92" fill="none" stroke="hotpink" strokeWidth="2.5" />
+        <rect x="10" y="10" width="80" height="80" fill="none" stroke={LINE} strokeWidth="1" />
+        {[
+          [10, 10, 1, 1],
+          [90, 10, -1, 1],
+          [10, 90, 1, -1],
+          [90, 90, -1, -1],
+        ].map(([x, y, sx, sy]) => (
+          <path
+            key={`${x}-${y}`}
+            d={`M${x} ${y} q${14 * sx} ${2 * sy} ${16 * sx} ${16 * sy} q${-8 * sx} ${-2 * sy} ${-6 * sx} ${-8 * sy} M${x} ${y} q${2 * sx} ${14 * sy} ${16 * sx} ${16 * sy}`}
+            fill="none"
+            stroke="hotpink"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        ))}
+        {[22, 50, 78].map((v) => (
+          <g key={v} fill={LINE}>
+            <circle cx={v} cy="4" r="1.6" />
+            <circle cx={v} cy="96" r="1.6" />
+            <circle cx="4" cy={v} r="1.6" />
+            <circle cx="96" cy={v} r="1.6" />
+          </g>
+        ))}
+      </svg>
+      <span className="game-initial-letter">{letter}</span>
+    </span>
+  );
+};
+
+const Illuminated = ({ text }) => {
+  const { lead, letter, rest } = splitInitial(text);
+  return (
+    <p className="game-illuminated" aria-label={text}>
+      <span aria-hidden="true">
+        {lead && <span className="game-initial-lead">{lead}</span>}
+        {letter && <Initial letter={letter} />}
+        {rest}
+      </span>
+    </p>
+  );
+};
+
 const Person = ({ label, hat }) => (
   <svg viewBox="0 0 40 52" className="game-person" aria-label={label}>
     {hat && <path d="M8 14 L20 2 L32 14 Z" fill="#000" stroke={LINE} strokeWidth="2.5" strokeLinejoin="round" />}
@@ -937,7 +998,7 @@ const Juego = () => {
       </div>
       {dialog && (
         <div className="game-dialog" role="dialog" aria-live="polite" onPointerDown={() => keys.current.press?.()}>
-          <p>{dialog}</p>
+          <Illuminated text={dialog} />
           <span className="game-dialog-next">{touch ? "tocá" : "espacio"} ▸</span>
         </div>
       )}
