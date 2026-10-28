@@ -6,6 +6,7 @@ import pie1 from "./juego/pie-1.png";
 import pie2 from "./juego/pie-2.png";
 import arbusto from "./juego/arbusto.png";
 import borde from "./juego/borde.png";
+import espada from "./juego/espada.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
 
 const LINE = "#e9e6e1";
@@ -326,14 +327,6 @@ const Person = ({ label, hat }) => (
     {hat && <path d="M8 14 L20 2 L32 14 Z" fill="#000" stroke={LINE} strokeWidth="2.5" strokeLinejoin="round" />}
     <circle cx="20" cy="18" r="9" fill="#000" stroke={LINE} strokeWidth="2.5" />
     <path d="M8 50 Q8 30 20 30 Q32 30 32 50 Z" fill="#000" stroke={LINE} strokeWidth="2.5" strokeLinejoin="round" />
-  </svg>
-);
-
-const SwordIcon = ({ better }) => (
-  <svg viewBox="0 0 40 40" className="game-sword-icon" aria-hidden="true">
-    <path d="M8 32 L28 12" stroke={better ? "hotpink" : LINE} strokeWidth="4" strokeLinecap="round" />
-    <path d="M28 12 L33 7" stroke={better ? "hotpink" : LINE} strokeWidth="2" strokeLinecap="round" />
-    <path d="M6 24 L16 34" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
 
@@ -957,8 +950,8 @@ const Juego = () => {
             </div>
           );
         })}
-        <div className="game-item" ref={swordItem} style={{ left: center(spot.current).x, top: center(spot.current).y }}>
-          <SwordIcon better />
+        <div className="game-item game-item-sword" ref={swordItem} style={{ left: center(spot.current).x, top: center(spot.current).y }}>
+          <img src={espada} alt="" />
         </div>
         {HEARTS.map((p, i) => (
           <div key={i} className="game-item" ref={(el) => (heartItems.current[i] = el)} style={{ left: center(p).x, top: center(p).y }}>

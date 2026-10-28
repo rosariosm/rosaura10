@@ -570,29 +570,32 @@ button {
 }
 
 .game-blade.better {
-  height: 6px;
-  top: -3px;
-  background: hotpink;
+  top: -6px;
+  left: -12px;
+  width: 60px;
+  height: 12px;
+  border-radius: 0;
+  background: url("./juego/espada.png") center / contain no-repeat;
+  transform-origin: 12px 50%;
 }
 
 .game-hero.charging .game-blade {
-  box-shadow: 0 0 6px 1px rgb(255 105 180 / 0.5);
+  filter: drop-shadow(0 0 3px rgb(255 105 180 / 0.6));
 }
 
 .game-hero.charged .game-blade {
-  box-shadow: 0 0 14px 4px hotpink;
+  filter: drop-shadow(0 0 4px hotpink) drop-shadow(0 0 8px hotpink);
 }
 
 .game-thrown {
   position: absolute;
-  top: -3px;
-  left: -22px;
+  top: -6px;
+  left: -30px;
   z-index: 2;
-  width: 44px;
-  height: 6px;
-  border-radius: 3px;
-  background: hotpink;
-  box-shadow: 0 0 10px hotpink;
+  width: 60px;
+  height: 12px;
+  background: url("./juego/espada.png") center / contain no-repeat;
+  filter: drop-shadow(0 0 4px hotpink);
 }
 
 .game-foot {
@@ -660,8 +663,14 @@ button {
   width: 21px;
 }
 
-.game-sword-icon {
+.game-item-sword {
+  width: 60px;
+}
+
+.game-item-sword img {
   display: block;
+  width: 100%;
+  rotate: -45deg;
 }
 
 .game-status {
