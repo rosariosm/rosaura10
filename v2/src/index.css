@@ -881,6 +881,25 @@ img.game-initial {
   font-size: 0.75rem;
 }
 
+.game-mute {
+  position: absolute;
+  top: 100px;
+  right: 1rem;
+  z-index: 4;
+  padding: 0.2rem 0.5rem;
+  border: 0;
+  background: none;
+  color: #7b7784;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.game-mute:hover,
+.game-mute:focus-visible {
+  color: #e9e6e1;
+}
+
 .game-boss {
   position: absolute;
   top: 1.4rem;

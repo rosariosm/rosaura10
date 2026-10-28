@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import arbol from "./juego/arbol.png";
@@ -8,6 +8,7 @@ import arbusto from "./juego/arbusto.png";
 import borde from "./juego/borde.png";
 import espada from "./juego/espada.png";
 import espadaComun from "./juego/espada-comun.png";
+import musicaPelea from "./juego/musica/pelea.mp3";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
 
 const LINE = "#e9e6e1";
@@ -373,6 +374,69 @@ const Heart = ({ full = 1, color = "hotpink", className = "game-heart" }) => {
 const HP_PER_HEART = 2;
 const ENEMY = "#8db600";
 
+const MUSIC_VOLUME = 0.35;
+
+const readMuted = () => {
+  try {
+    return localStorage.getItem("juego-silencio") === "1";
+  } catch {
+    return false;
+  }
+};
+
+const useMusic = (src, playing, muted) => {
+  const audio = useRef(null);
+
+  useEffect(() => {
+    const ctx = new AudioContext();
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.connect(ctx.destination);
+    const a = { ctx, gain, buffer: null, source: null, start: () => {} };
+    audio.current = a;
+    const unlock = () => ctx.resume();
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("pointerdown", unlock);
+    fetch(src)
+      .then((r) => r.arrayBuffer())
+      .then((b) => ctx.decodeAudioData(b))
+      .then((buffer) => {
+        a.buffer = buffer;
+        a.start();
+      })
+      .catch((e) => console.error(e));
+    return () => {
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("pointerdown", unlock);
+      ctx.close();
+    };
+  }, [src]);
+
+  useEffect(() => {
+    const a = audio.current;
+    if (!a) return;
+    a.start = () => {
+      if (!playing || a.source || !a.buffer) return;
+      a.ctx.resume();
+      a.source = a.ctx.createBufferSource();
+      a.source.buffer = a.buffer;
+      a.source.loop = true;
+      a.source.connect(a.gain);
+      a.source.start();
+    };
+    a.start();
+    const now = a.ctx.currentTime;
+    const fade = playing ? 0.8 : 1.5;
+    a.gain.gain.cancelScheduledValues(now);
+    a.gain.gain.setValueAtTime(a.gain.gain.value, now);
+    a.gain.gain.linearRampToValueAtTime(playing && !muted ? MUSIC_VOLUME : 0, now + fade);
+    if (!playing && a.source) {
+      a.source.stop(now + fade);
+      a.source = null;
+    }
+  }, [playing, muted]);
+};
+
 const BossBar = ({ hp }) => (
   <div className="game-boss" aria-label={`pies: ${hp.map((h) => `${h} de ${FOOT_HP}`).join(" y ")}`}>
     {hp.map((h, i) => (
@@ -414,6 +478,17 @@ const Juego = () => {
   const [dialog, setDialog] = useState(null);
   const [scene, setScene] = useState("world");
   const [end, setEnd] = useState(null);
+  const [muted, setMuted] = useState(readMuted);
+  useMusic(musicaPelea, scene === "boss" && !end, muted);
+  const toggleMuted = () => {
+    const next = !muted;
+    setMuted(next);
+    try {
+      localStorage.setItem("juego-silencio", next ? "1" : "0");
+    } catch {
+      return;
+    }
+  };
   const [bossHp, setBossHp] = useState([FOOT_HP, FOOT_HP]);
   const [touch] = useState(() => window.matchMedia("(pointer: coarse)").matches);
   const game = useRef(null);
@@ -980,6 +1055,17 @@ const Juego = () => {
         <span className="game-body" />
       </div>
       <span className="game-thrown" ref={thrown} />
+      {scene === "boss" && (
+        <button
+          type="button"
+          className="game-mute"
+          aria-pressed={muted}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={toggleMuted}
+        >
+          {muted ? "♪ no" : "♪ sí"}
+        </button>
+      )}
       <div className="game-hud" aria-live="polite">
         <div className="game-hearts" aria-label={`${hud.hp} de ${hud.max} corazones`}>
           {Array.from({ length: hud.max }, (_, i) => (
