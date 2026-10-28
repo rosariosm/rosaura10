@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
-import pie1 from "./feet/pie1.json";
-import espada from "./juego/espada.png";
+import foot1 from "./feet/foot1.json";
+import swordUrl from "./game/sword-better.png";
 
-const feet = import.meta.glob("./feet/pie1*.png", { eager: true, import: "default", query: "?url" });
+const feet = import.meta.glob("./feet/foot1*.png", { eager: true, import: "default", query: "?url" });
 const dolphin = Object.entries(
-  import.meta.glob("./delfin/line-*.png", { eager: true, import: "default", query: "?url" })
+  import.meta.glob("./dolphin/line-*.png", { eager: true, import: "default", query: "?url" })
 )
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, src]) => src);
@@ -61,11 +61,11 @@ const Leg = () => {
     <span className="leg" ref={root} style={{ width: CROP.w * k, height: LEG_PX }}>
       <img
         className="leg-base"
-        src={feet["./feet/pie1.png"]}
+        src={feet["./feet/foot1.png"]}
         alt=""
-        style={{ width: pie1.w * k, left: -CROP.x * k, top: -CROP.y * k }}
+        style={{ width: foot1.w * k, left: -CROP.x * k, top: -CROP.y * k }}
       />
-      {pie1.hairs.map((hair) => {
+      {foot1.hairs.map((hair) => {
         const s = k * HAIR_BOOST;
         return (
           <img
@@ -129,7 +129,7 @@ const Dolphin = () => {
 
 const Sword = () => (
   <span className="mini-sword" aria-hidden="true">
-    <img src={espada} alt="" />
+    <img src={swordUrl} alt="" />
   </span>
 );
 

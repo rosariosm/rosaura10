@@ -5,7 +5,7 @@ import gsap from "gsap";
 import Feet from "./Feet";
 import Gallery from "./Gallery";
 
-const Pelos = () => {
+const Hairs = () => {
   const hero = useRef();
   const zoom = useRef(0);
 
@@ -54,4 +54,4 @@ const Pelos = () => {
   );
 };
 
-export default Pelos;
+export default Hairs;

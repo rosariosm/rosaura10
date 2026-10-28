@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-import pie1 from "./feet/pie1.json";
-import pie2 from "./feet/pie2.json";
+import foot1 from "./feet/foot1.json";
+import foot2 from "./feet/foot2.json";
 
 const urls = import.meta.glob("./feet/*-hair-*.png", { eager: true, import: "default", query: "?url" });
 
-const sprites = [...pie1.hairs, ...pie2.hairs].filter((hair) => Math.max(hair.w, hair.h) >= 22);
+const sprites = [...foot1.hairs, ...foot2.hairs].filter((hair) => Math.max(hair.w, hair.h) >= 22);
 
 const FALLOFF = 380;
 

@@ -247,20 +247,20 @@ button {
   }
 }
 
-.delfin {
+.dolphin-page {
   --floor: 34vh;
   position: relative;
   height: 100vh;
   overflow: hidden;
 }
 
-.delfin-world {
+.dolphin-world {
   position: absolute;
   inset: 0 auto 0 0;
   will-change: transform;
 }
 
-.delfin-floor {
+.dolphin-floor {
   position: absolute;
   inset: auto 0 0;
   display: flex;
@@ -295,7 +295,7 @@ button {
   clip-path: inset(0 0 52% 0);
 }
 
-.delfin-surface {
+.dolphin-surface {
   position: absolute;
   left: 0;
   width: 100%;
@@ -319,7 +319,7 @@ button {
   width: auto;
 }
 
-.delfin-diamond {
+.dolphin-diamond {
   position: absolute;
   top: 0;
   left: 0;
@@ -351,7 +351,7 @@ button {
   height: 100%;
 }
 
-.delfin-bubbles {
+.dolphin-bubbles {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -367,7 +367,7 @@ button {
   opacity: 0.85;
 }
 
-.delfin-outro {
+.dolphin-outro {
   position: absolute;
   inset: 0;
   display: grid;
@@ -376,32 +376,32 @@ button {
   pointer-events: none;
 }
 
-.delfin-outro p {
+.dolphin-outro p {
   max-width: 30rem;
   margin: 0 1.5rem;
   color: #7b7784;
   text-align: center;
 }
 
-.delfin-outro-reef {
+.dolphin-outro-reef {
   position: absolute;
   bottom: 0;
   height: 58vh;
 }
 
-.delfin-outro-reef img {
+.dolphin-outro-reef img {
   display: block;
   height: 100%;
   width: auto;
   max-width: none;
 }
 
-.delfin-outro-left {
+.dolphin-outro-left {
   right: calc(50% + 9rem);
   transform: translateX(calc((var(--reveal, 0) - 1) * 100%));
 }
 
-.delfin-outro-right {
+.dolphin-outro-right {
   left: calc(50% + 9rem);
   transform: translateX(calc((1 - var(--reveal, 0)) * 100%)) scaleX(-1);
 }
@@ -412,41 +412,41 @@ button {
   width: 100%;
 }
 
-.delfin-outro .delfin-outro-small {
+.dolphin-outro .dolphin-outro-small {
   display: none;
 }
 
 @media (max-aspect-ratio: 3/4) {
-  .delfin {
+  .dolphin-page {
     --floor: 24vh;
   }
 
-  .delfin-outro-reef {
+  .dolphin-outro-reef {
     display: none;
   }
 
-  .delfin-outro .delfin-outro-small {
+  .dolphin-outro .dolphin-outro-small {
     display: block;
     bottom: 4.5rem;
     width: 44vw;
     height: auto;
   }
 
-  .delfin-outro .delfin-outro-small img {
+  .dolphin-outro .dolphin-outro-small img {
     width: 100%;
     height: auto;
   }
 
-  .delfin-outro p {
+  .dolphin-outro p {
     font-size: 0.78rem;
   }
 
-  .delfin-outro-left.delfin-outro-small {
+  .dolphin-outro-left.dolphin-outro-small {
     right: auto;
     left: 0;
   }
 
-  .delfin-outro-right.delfin-outro-small {
+  .dolphin-outro-right.dolphin-outro-small {
     left: auto;
     right: 0;
   }
@@ -575,7 +575,7 @@ button {
   z-index: 1;
   width: 62px;
   height: 14px;
-  background: url("./juego/espada-comun.png") right center / contain no-repeat;
+  background: url("./game/sword-common.png") right center / contain no-repeat;
   transform-origin: 0 50%;
 }
 
@@ -583,7 +583,7 @@ button {
   top: -6px;
   width: 72px;
   height: 12px;
-  background-image: url("./juego/espada.png");
+  background-image: url("./game/sword-better.png");
 }
 
 .game-hero.charging .game-blade {
@@ -601,7 +601,7 @@ button {
   z-index: 2;
   width: 60px;
   height: 12px;
-  background: url("./juego/espada.png") center / contain no-repeat;
+  background: url("./game/sword-better.png") center / contain no-repeat;
   filter: drop-shadow(0 0 4px hotpink);
 }
 

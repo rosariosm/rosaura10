@@ -1,15 +1,15 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
-import arbol from "./juego/arbol.png";
-import pie1 from "./juego/pie-1.png";
-import pie2 from "./juego/pie-2.png";
-import arbusto from "./juego/arbusto.png";
-import borde from "./juego/borde.png";
-import espada from "./juego/espada.png";
-import espadaComun from "./juego/espada-comun.png";
-import musicaPelea from "./juego/musica/pelea.mp3";
-import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
+import treeUrl from "./game/tree.png";
+import foot1Url from "./game/foot-1.png";
+import foot2Url from "./game/foot-2.png";
+import bushUrl from "./game/bush.png";
+import pathEdgeUrl from "./game/path-edge.png";
+import betterSwordUrl from "./game/sword-better.png";
+import commonSwordUrl from "./game/sword-common.png";
+import fightMusicUrl from "./game/music/fight.mp3";
+import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./game/world";
 
 const LINE = "#e9e6e1";
 const SPEED = 190;
@@ -37,7 +37,7 @@ const ROWS = MAP.length;
 const WORLD_W = COLS * TILE;
 const WORLD_H = ROWS * TILE;
 
-const FEET = [pie1, pie2];
+const FEET = [foot1Url, foot2Url];
 const WHIP_ORIGINS = [
   { x: -0.11, y: 0.32 },
   { x: 0.3, y: 0.33 },
@@ -74,11 +74,11 @@ const sortedUrls = (glob) =>
   Object.entries(glob)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, src]) => src);
-const grassUrls = sortedUrls(import.meta.glob("./juego/pasto-*.png", { eager: true, import: "default", query: "?url" }));
-const flowerUrls = sortedUrls(import.meta.glob("./juego/flor-*.png", { eager: true, import: "default", query: "?url" }));
+const grassUrls = sortedUrls(import.meta.glob("./game/grass-*.png", { eager: true, import: "default", query: "?url" }));
+const flowerUrls = sortedUrls(import.meta.glob("./game/flower-*.png", { eager: true, import: "default", query: "?url" }));
 const DECO_SCALE = 0.14;
 const GRASS_SCALE = 0.1;
-const stoneUrls = sortedUrls(import.meta.glob("./juego/piedras-*.png", { eager: true, import: "default", query: "?url" }));
+const stoneUrls = sortedUrls(import.meta.glob("./game/stones-*.png", { eager: true, import: "default", query: "?url" }));
 
 const loadImage = (src) =>
   new Promise((resolve, reject) => {
@@ -264,7 +264,7 @@ const drawMap = (canvas, art = {}) => {
 };
 
 const LETTERS = Object.fromEntries(
-  Object.entries(import.meta.glob("./juego/letras/*.png", { eager: true, import: "default", query: "?url" })).map(
+  Object.entries(import.meta.glob("./game/letters/*.png", { eager: true, import: "default", query: "?url" })).map(
     ([path, src]) => [path.slice(path.lastIndexOf("/") + 1, -4).toUpperCase(), src]
   )
 );
@@ -378,7 +378,7 @@ const MUSIC_VOLUME = 0.35;
 
 const readMuted = () => {
   try {
-    return localStorage.getItem("juego-silencio") === "1";
+    return localStorage.getItem("game-muted") === "1";
   } catch {
     return false;
   }
@@ -461,7 +461,7 @@ const intro = [
   "Cuando estés lista o listo, entrá a la casa y peleá. ¡Suerte!",
 ];
 
-const Juego = () => {
+const Game = () => {
   const root = useRef();
   const world = useRef();
   const map = useRef();
@@ -474,17 +474,17 @@ const Juego = () => {
   const whips = useRef([]);
   const room = useRef();
   const keys = useRef({ x: 0, y: 0, action: false });
-  const [hud, setHud] = useState({ hp: START_HP, max: START_HP, sword: "común", canThrow: false });
+  const [hud, setHud] = useState({ hp: START_HP, max: START_HP, sword: "common", canThrow: false });
   const [dialog, setDialog] = useState(null);
   const [scene, setScene] = useState("world");
   const [end, setEnd] = useState(null);
   const [muted, setMuted] = useState(readMuted);
-  useMusic(musicaPelea, scene === "boss" && !end, muted);
+  useMusic(fightMusicUrl, scene === "boss" && !end, muted);
   const toggleMuted = () => {
     const next = !muted;
     setMuted(next);
     try {
-      localStorage.setItem("juego-silencio", next ? "1" : "0");
+      localStorage.setItem("game-muted", next ? "1" : "0");
     } catch {
       return;
     }
@@ -497,7 +497,7 @@ const Juego = () => {
   useLayoutEffect(() => {
     drawMap(map.current);
     const all = (urls) => Promise.all(urls.map(loadImage));
-    Promise.all([loadImage(arbusto), loadImage(arbol), loadImage(borde), all(stoneUrls), all(grassUrls), all(flowerUrls)])
+    Promise.all([loadImage(bushUrl), loadImage(treeUrl), loadImage(pathEdgeUrl), all(stoneUrls), all(grassUrls), all(flowerUrls)])
       .then(
         ([bush, tree, edge, stones, grass, flowers]) =>
           map.current &&
@@ -534,7 +534,7 @@ const Juego = () => {
     game.current = s;
 
     const sync = () =>
-      setHud({ hp: s.hero.hp, max: s.hero.max, sword: s.better ? "mejor" : "común", canThrow: s.canThrow });
+      setHud({ hp: s.hero.hp, max: s.hero.max, sword: s.better ? "better" : "common", canThrow: s.canThrow });
 
     const say = (lines, then) => {
       s.dialog = { lines, i: 0, then };
@@ -1028,7 +1028,7 @@ const Juego = () => {
           );
         })}
         <div className="game-item game-item-sword" ref={swordItem} style={{ left: center(spot.current).x, top: center(spot.current).y }}>
-          <img src={espada} alt="" />
+          <img src={betterSwordUrl} alt="" />
         </div>
         {HEARTS.map((p, i) => (
           <div key={i} className="game-item" ref={(el) => (heartItems.current[i] = el)} style={{ left: center(p).x, top: center(p).y }}>
@@ -1074,8 +1074,8 @@ const Juego = () => {
         </div>
         <img
           className={`game-status${hud.canThrow ? " can-throw" : ""}`}
-          src={hud.sword === "mejor" ? espada : espadaComun}
-          alt={`espada ${hud.sword}${hud.canThrow ? ", se puede lanzar" : ""}`}
+          src={hud.sword === "better" ? betterSwordUrl : commonSwordUrl}
+          alt={`espada ${hud.sword === "better" ? "mejor" : "común"}${hud.canThrow ? ", se puede lanzar" : ""}`}
         />
       </div>
       {dialog && (
@@ -1131,4 +1131,4 @@ const Juego = () => {
 
 const roomStyle = (r) => (r ? { left: r.x0, top: r.y0, width: r.x1 - r.x0, height: r.y1 - r.y0 } : undefined);
 
-export default Juego;
+export default Game;

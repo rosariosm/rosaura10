@@ -2,9 +2,9 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import arrecife from "./delfin/arrecife.png";
-import mar from "./delfin/mar.png";
-import suelo from "./delfin/suelo.json";
+import reefUrl from "./dolphin/reef.png";
+import seaUrl from "./dolphin/sea.png";
+import floorPieces from "./dolphin/floor.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,9 +19,9 @@ const JUMP = [0.42, 0.6];
 const STROKES_PER_SCREEN = 6;
 const SWIM = 0.72;
 
-const floorUrls = import.meta.glob("./delfin/suelo-*.png", { eager: true, import: "default", query: "?url" });
+const floorUrls = import.meta.glob("./dolphin/floor-*.png", { eager: true, import: "default", query: "?url" });
 
-const TALLEST = Math.max(...suelo.map((piece) => piece.h));
+const TALLEST = Math.max(...floorPieces.map((piece) => piece.h));
 const FLOOR_VH = 34;
 const SPACES = [30, 55, 38, 70, 26, 48, 62];
 const CORALS = 48;
@@ -30,10 +30,10 @@ const SEA_VH = 10;
 const SEA_TILES = 28;
 const FLOOR_TOP = 100 - FLOOR_VH * 0.6;
 const FLOOR = Array.from({ length: 30 }, (_, i) => {
-  const piece = suelo[[2, 0, 1, 2, 1, 0][i % 6]];
+  const piece = floorPieces[[2, 0, 1, 2, 1, 0][i % 6]];
   return {
     ...piece,
-    src: floorUrls[`./delfin/${piece.file}`],
+    src: floorUrls[`./dolphin/${piece.file}`],
     flip: i % 6 >= 3,
     space: SPACES[i % SPACES.length],
     sway: i % 5 !== 2 && i % 4 !== 3,
@@ -41,13 +41,13 @@ const FLOOR = Array.from({ length: 30 }, (_, i) => {
 });
 
 const shine = Object.entries(
-  import.meta.glob("./delfin/diamante-*.png", { eager: true, import: "default", query: "?url" })
+  import.meta.glob("./dolphin/diamond-*.png", { eager: true, import: "default", query: "?url" })
 )
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, src]) => src);
 const SHINE_FPS = 6;
 
-const LAST = { ...suelo[1], src: floorUrls[`./delfin/${suelo[1].file}`] };
+const LAST = { ...floorPieces[1], src: floorUrls[`./dolphin/${floorPieces[1].file}`] };
 const LAST_GAP = 4;
 
 const FloorPiece = ({ src, w, h, flip, space, sway, className = "" }) => (
@@ -66,12 +66,12 @@ const FloorPiece = ({ src, w, h, flip, space, sway, className = "" }) => (
 );
 
 const swim = Object.entries(
-  import.meta.glob("./delfin/line-*.png", { eager: true, import: "default", query: "?url" })
+  import.meta.glob("./dolphin/line-*.png", { eager: true, import: "default", query: "?url" })
 )
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, src]) => src);
 
-const Dolphin = ({ frames }) => (
+const DolphinFrames = ({ frames }) => (
   <div className="dolphin-frames">
     {swim.map((src, i) => (
       <img
@@ -86,13 +86,13 @@ const Dolphin = ({ frames }) => (
 );
 
 const Reef = ({ className, src }) => (
-  <div className={`delfin-outro-reef ${className}`}>
+  <div className={`dolphin-outro-reef ${className}`}>
     <img className="floor-rocks" src={src} alt="" />
     <img className="floor-corals" src={src} alt="" />
   </div>
 );
 
-const Delfin = () => {
+const Dolphin = () => {
   const root = useRef();
   const world = useRef();
   const dolphin = useRef();
@@ -123,7 +123,7 @@ const Delfin = () => {
 
       gsap.to(".sea-layer-1", { opacity: 1, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
       gsap.to(".sea-layer-0", { opacity: 0.2, duration: 1.6, ease: "sine.inOut", repeat: -1, yoyo: true });
-      gsap.to(".delfin-surface", { y: "0.6vh", duration: 2.4, ease: "sine.inOut", repeat: -1, yoyo: true });
+      gsap.to(".dolphin-surface", { y: "0.6vh", duration: 2.4, ease: "sine.inOut", repeat: -1, yoyo: true });
 
       gsap.utils.toArray(".floor-corals").forEach((el) => {
         const lean = gsap.utils.random(7, 11);
@@ -285,38 +285,38 @@ const Delfin = () => {
   }, []);
 
   return (
-    <section className="delfin" ref={root} aria-label="un delfín que nada mientras scrolleás">
-      <div className="delfin-world" ref={world} style={{ width: `${WORLD}vw` }}>
-        <div className="delfin-floor" aria-hidden="true">
+    <section className="dolphin-page" ref={root} aria-label="un delfín que nada mientras scrolleás">
+      <div className="dolphin-world" ref={world} style={{ width: `${WORLD}vw` }}>
+        <div className="dolphin-floor" aria-hidden="true">
           {FLOOR.map((piece, i) => (
             <FloorPiece key={i} {...piece} />
           ))}
           <FloorPiece {...LAST} sway className="floor-piece-last" />
         </div>
-        <div className="delfin-surface" style={{ top: `${SURFACE - SEA_VH / 2}vh`, height: `${SEA_VH}vh` }} aria-hidden="true">
+        <div className="dolphin-surface" style={{ top: `${SURFACE - SEA_VH / 2}vh`, height: `${SEA_VH}vh` }} aria-hidden="true">
           {[0, 1].map((layer) => (
             <div key={layer} className={`sea-layer sea-layer-${layer}`}>
               {Array.from({ length: SEA_TILES }, (_, i) => (
-                <img key={i} src={mar} alt="" style={{ transform: (i + layer) % 2 ? "scaleX(-1)" : undefined }} />
+                <img key={i} src={seaUrl} alt="" style={{ transform: (i + layer) % 2 ? "scaleX(-1)" : undefined }} />
               ))}
             </div>
           ))}
         </div>
       </div>
-      <div className="delfin-diamond" ref={diamondBox}>
+      <div className="dolphin-diamond" ref={diamondBox}>
         <div className="diamond-frames" ref={diamond} aria-hidden="true">
           {shine.map((src, i) => (
             <img key={src} src={src} alt="" style={{ visibility: i === 0 ? "visible" : "hidden" }} />
           ))}
         </div>
       </div>
-      <div className="delfin-bubbles" ref={bubbleLayer} aria-hidden="true" />
+      <div className="dolphin-bubbles" ref={bubbleLayer} aria-hidden="true" />
       <div className="dolphin" ref={dolphin}>
-        <Dolphin frames={frames} />
+        <DolphinFrames frames={frames} />
       </div>
-      <div className="delfin-outro" ref={outro}>
-        <Reef className="delfin-outro-left" src={arrecife} />
-        <Reef className="delfin-outro-left delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} />
+      <div className="dolphin-outro" ref={outro}>
+        <Reef className="dolphin-outro-left" src={reefUrl} />
+        <Reef className="dolphin-outro-left dolphin-outro-small" src={floorUrls["./dolphin/floor-1.png"]} />
         <p lang="es">
           pasé mucho tiempo
           <br />
@@ -324,11 +324,11 @@ const Delfin = () => {
           <br />
           teniendo vergüenza al pedo
         </p>
-        <Reef className="delfin-outro-right" src={arrecife} />
-        <Reef className="delfin-outro-right delfin-outro-small" src={floorUrls["./delfin/suelo-1.png"]} />
+        <Reef className="dolphin-outro-right" src={reefUrl} />
+        <Reef className="dolphin-outro-right dolphin-outro-small" src={floorUrls["./dolphin/floor-1.png"]} />
       </div>
     </section>
   );
 };
 
-export default Delfin;
+export default Dolphin;

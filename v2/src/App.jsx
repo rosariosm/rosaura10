@@ -1,17 +1,17 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import Delfin from "./Delfin";
-import Juego from "./Juego";
+import Dolphin from "./Dolphin";
+import Game from "./Game";
+import Hairs from "./Hairs";
 import Menu from "./Menu";
-import Pelos from "./Pelos";
 
 const V1 = "/rosaura10/v1/";
 
 const PAGES = {
-  pelos: Pelos,
-  delfin: Delfin,
-  juego: Juego,
+  pelos: Hairs,
+  delfin: Dolphin,
+  juego: Game,
 };
 
 const fromHash = () => {

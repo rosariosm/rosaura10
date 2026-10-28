@@ -2,8 +2,8 @@ import { useMemo, useRef } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { TextureLoader, Vector3 } from "three";
 
-import pie1 from "./feet/pie1.json";
-import pie2 from "./feet/pie2.json";
+import foot1 from "./feet/foot1.json";
+import foot2 from "./feet/foot2.json";
 
 const urls = import.meta.glob("./feet/*.png", {
   eager: true,
@@ -90,8 +90,8 @@ const Feet = ({ zoom }) => {
 
   return (
     <group scale={fit} position={[0, 0.2, 0]}>
-      <Foot name="pie1" meta={pie1} position={[-2.25, 0, 0]} />
-      <Foot name="pie2" meta={pie2} position={[2.25, 0, 0]} />
+      <Foot name="foot1" meta={foot1} position={[-2.25, 0, 0]} />
+      <Foot name="foot2" meta={foot2} position={[2.25, 0, 0]} />
     </group>
   );
 };
