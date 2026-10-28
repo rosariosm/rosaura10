@@ -652,7 +652,7 @@ button {
 
 .game-hud {
   position: absolute;
-  top: 46px;
+  top: 34px;
   right: 1.5rem;
   z-index: 4;
   text-align: right;
