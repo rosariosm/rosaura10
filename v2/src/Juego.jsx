@@ -7,6 +7,7 @@ import pie2 from "./juego/pie-2.png";
 import arbusto from "./juego/arbusto.png";
 import borde from "./juego/borde.png";
 import espada from "./juego/espada.png";
+import espadaComun from "./juego/espada-comun.png";
 import { DOOR, GUIDE, HEARTS, MAP, SMITH, SOLID, START, SWORD_SPOTS, TILE } from "./juego/world";
 
 const LINE = "#e9e6e1";
@@ -985,10 +986,11 @@ const Juego = () => {
             <Heart key={i} full={i < hud.hp ? 1 : 0} />
           ))}
         </div>
-        <p className="game-status">
-          espada {hud.sword}
-          {hud.canThrow ? " · se puede lanzar" : ""}
-        </p>
+        <img
+          className={`game-status${hud.canThrow ? " can-throw" : ""}`}
+          src={hud.sword === "mejor" ? espada : espadaComun}
+          alt={`espada ${hud.sword}${hud.canThrow ? ", se puede lanzar" : ""}`}
+        />
       </div>
       {dialog && (
         <div className="game-dialog" role="dialog" aria-live="polite" onPointerDown={() => keys.current.press?.()}>
