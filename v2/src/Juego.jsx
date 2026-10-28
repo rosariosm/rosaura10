@@ -794,8 +794,8 @@ const Juego = () => {
       heroEl.classList.toggle("charged", s.canThrow && s.charge >= CHARGE);
       heroEl.classList.toggle("charging", s.canThrow && s.holding && s.charge > 0.12);
       const swingT = s.swing > 0 ? 1 - s.swing / SWING : -1;
-      blade.current.style.opacity = s.throwing ? 0 : swingT >= 0 || s.holding ? 1 : 0;
-      const sweep = swingT >= 0 ? -1.2 + swingT * 2.4 : 0;
+      blade.current.style.opacity = s.throwing ? 0 : 1;
+      const sweep = swingT >= 0 ? -1.2 + swingT * 2.4 : s.holding ? 0 : 1.1;
       blade.current.style.transform = `rotate(${angle + sweep}rad)`;
       blade.current.classList.toggle("better", s.better);
       const t = s.throwing;

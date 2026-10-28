@@ -570,23 +570,20 @@ button {
 
 .game-blade {
   position: absolute;
-  top: -2px;
+  top: -7px;
   left: 0;
-  width: 44px;
-  height: 4px;
-  border-radius: 2px;
-  background: #e9e6e1;
+  z-index: 1;
+  width: 62px;
+  height: 14px;
+  background: url("./juego/espada-comun.png") right center / contain no-repeat;
   transform-origin: 0 50%;
 }
 
 .game-blade.better {
   top: -6px;
-  left: -12px;
-  width: 60px;
+  width: 72px;
   height: 12px;
-  border-radius: 0;
-  background: url("./juego/espada.png") center / contain no-repeat;
-  transform-origin: 12px 50%;
+  background-image: url("./juego/espada.png");
 }
 
 .game-hero.charging .game-blade {
