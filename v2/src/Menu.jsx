@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
 import pie1 from "./feet/pie1.json";
+import espada from "./juego/espada.png";
 
 const feet = import.meta.glob("./feet/pie1*.png", { eager: true, import: "default", query: "?url" });
 const dolphin = Object.entries(
@@ -127,11 +128,9 @@ const Dolphin = () => {
 };
 
 const Sword = () => (
-  <svg className="mini-sword" viewBox="0 0 40 40" aria-hidden="true">
-    <path d="M9 31 L29 11 L33 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    <path d="M7 23 L17 33" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    <path d="M6 34 L10 30" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-  </svg>
+  <span className="mini-sword" aria-hidden="true">
+    <img src={espada} alt="" />
+  </span>
 );
 
 const Underline = () => (
