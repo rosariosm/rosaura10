@@ -589,7 +589,7 @@ const Juego = () => {
       if (foot.dead) return;
       foot.hp = Math.max(0, foot.hp - damage);
       setBossHp(s.feet.map((h) => h.hp));
-      foot.flash = 0.25;
+      foot.flash = 0.6;
       const d = Math.hypot(foot.x - from.x, foot.y - from.y) || 1;
       foot.x += ((foot.x - from.x) / d) * 30;
       foot.y += ((foot.y - from.y) / d) * 30;
@@ -813,6 +813,7 @@ const Juego = () => {
         const sway = Math.sin(time * 2 + i * 2) * 4;
         el.style.transform = `translate(${foot.x + shake}px, ${foot.y}px) rotate(${sway}deg)`;
         el.classList.toggle("flash", foot.flash > 0);
+        el.style.opacity = foot.flash > 0 && Math.floor(time * 16) % 2 === 0 ? 0.15 : "";
         el.classList.toggle("tired", foot.state === "rest");
         const p = foot.state === "whip" ? foot.t / WHIP_TIME : 0;
         lines.forEach((line, k) => {
