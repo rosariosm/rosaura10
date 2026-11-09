@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import treeUrl from "./game/tree.png";
+import houseUrl from "./game/house.png";
 import foot1Url from "./game/foot-1.png";
 import foot2Url from "./game/foot-2.png";
 import bushUrl from "./game/bush.png";
@@ -158,7 +159,7 @@ const drawPath = (g, art, seed) => {
 };
 
 const drawMap = (canvas, art = {}) => {
-  const { bush, tree, grass, flowers } = art;
+  const { bush, tree, grass, flowers, house: houseArt } = art;
   const deco = (img, x, y, scale = DECO_SCALE) => {
     const w = img.naturalWidth * scale;
     const h = img.naturalHeight * scale;
@@ -250,6 +251,12 @@ const drawMap = (canvas, art = {}) => {
   const hy = house.r0 * TILE;
   const hw = (house.c1 - house.c0 + 1) * TILE;
   const hh = (house.r1 - house.r0 + 1) * TILE;
+  if (houseArt) {
+    const w = hw + 10;
+    const h = (w * houseArt.naturalHeight) / houseArt.naturalWidth;
+    g.drawImage(houseArt, hx - 5, hy + hh - h, w, h);
+    return;
+  }
   g.lineWidth = 3;
   g.globalAlpha = LEVELS.house;
   g.strokeRect(hx + 4, hy + hh * 0.35, hw - 8, hh * 0.65 - 2);
@@ -497,13 +504,14 @@ const Game = () => {
   useLayoutEffect(() => {
     drawMap(map.current);
     const all = (urls) => Promise.all(urls.map(loadImage));
-    Promise.all([loadImage(bushUrl), loadImage(treeUrl), loadImage(pathEdgeUrl), all(stoneUrls), all(grassUrls), all(flowerUrls)])
+    Promise.all([loadImage(bushUrl), loadImage(treeUrl), loadImage(pathEdgeUrl), loadImage(houseUrl), all(stoneUrls), all(grassUrls), all(flowerUrls)])
       .then(
-        ([bush, tree, edge, stones, grass, flowers]) =>
+        ([bush, tree, edge, house, stones, grass, flowers]) =>
           map.current &&
           drawMap(map.current, {
             bush: tint(bush, LEVELS.plants),
             tree: tint(tree, LEVELS.plants),
+            house: tint(house, LEVELS.house),
             edge: tint(edge, LEVELS.ground),
             stones: stones.map((img) => tint(img, LEVELS.stones)),
             grass: grass.map((img) => tint(img, LEVELS.deco)),
