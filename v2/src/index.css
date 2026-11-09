@@ -513,6 +513,12 @@ button {
   width: 40px;
 }
 
+.game-npc.drawn {
+  top: -52px;
+  left: -26px;
+  width: 52px;
+}
+
 .game-person {
   display: block;
   width: 100%;

@@ -3,6 +3,7 @@ import gsap from "gsap";
 
 import treeUrl from "./game/tree.png";
 import houseUrl from "./game/house.png";
+import smithUrl from "./game/smith.png";
 import foot1Url from "./game/foot-1.png";
 import foot2Url from "./game/foot-2.png";
 import bushUrl from "./game/bush.png";
@@ -1026,12 +1027,12 @@ const Game = () => {
         <canvas ref={map} className="game-map" style={{ width: WORLD_W, height: WORLD_H }} />
         {[
           { pos: GUIDE, label: "guía", hat: false },
-          { pos: SMITH, label: "espadero", hat: true },
-        ].map(({ pos, label, hat }) => {
+          { pos: SMITH, label: "espadero", art: smithUrl },
+        ].map(({ pos, label, hat, art }) => {
           const c = center(pos);
           return (
-            <div key={label} className="game-npc" style={{ transform: `translate(${c.x}px, ${c.y}px)` }}>
-              <Person label={label} hat={hat} />
+            <div key={label} className={`game-npc${art ? " drawn" : ""}`} style={{ transform: `translate(${c.x}px, ${c.y}px)` }}>
+              {art ? <img className="game-person" src={art} alt={label} /> : <Person label={label} hat={hat} />}
             </div>
           );
         })}
