@@ -741,14 +741,18 @@ button {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 1rem;
-  padding-left: 0.8rem;
+  gap: 1.2rem;
+  padding-left: 0;
 }
 
 .game-dialog-face {
-  width: 7.5rem;
-  border: 2px solid #7b7784;
-  border-radius: 4px;
+  align-self: stretch;
+  width: 10rem;
+  height: calc(100% + 2.6rem - 8px);
+  margin: calc(4px - 1rem) 0 calc(4px - 1.6rem) 4px;
+  border-right: 2px solid #7b7784;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .game-illuminated {
@@ -960,7 +964,7 @@ img.game-initial {
   }
 
   .game-dialog-face {
-    width: 5rem;
+    width: 6.5rem;
   }
 
   .game-illuminated {
