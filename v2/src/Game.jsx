@@ -3,7 +3,7 @@ import gsap from "gsap";
 
 import treeUrl from "./game/tree.png";
 import houseUrl from "./game/house.png";
-import smithUrl from "./game/smith.png";
+import smithFaceUrl from "./game/smith-face.png";
 import foot1Url from "./game/foot-1.png";
 import foot2Url from "./game/foot-2.png";
 import bushUrl from "./game/bush.png";
@@ -545,14 +545,14 @@ const Game = () => {
     const sync = () =>
       setHud({ hp: s.hero.hp, max: s.hero.max, sword: s.better ? "better" : "common", canThrow: s.canThrow });
 
-    const say = (lines, then) => {
-      s.dialog = { lines, i: 0, then };
-      setDialog(lines[0]);
+    const say = (lines, then, face) => {
+      s.dialog = { lines, i: 0, then, face };
+      setDialog({ text: lines[0], face });
     };
     const advance = () => {
       const d = s.dialog;
       d.i += 1;
-      if (d.i < d.lines.length) return setDialog(d.lines[d.i]);
+      if (d.i < d.lines.length) return setDialog({ text: d.lines[d.i], face: d.face });
       s.dialog = null;
       setDialog(null);
       d.then?.();
@@ -586,6 +586,7 @@ const Game = () => {
       {
         pos: center(SMITH),
         lines: smithLines,
+        face: smithFaceUrl,
         after: () => {
           if (s.better && !s.canThrow) {
             s.canThrow = true;
@@ -602,7 +603,7 @@ const Game = () => {
         const npc = npcs.find((n) => dist(n.pos, s.hero) < TALK_R);
         if (npc) {
           const lines = npc.lines();
-          return say(lines, npc.after);
+          return say(lines, npc.after, npc.face);
         }
       }
       s.holding = true;
@@ -1027,12 +1028,12 @@ const Game = () => {
         <canvas ref={map} className="game-map" style={{ width: WORLD_W, height: WORLD_H }} />
         {[
           { pos: GUIDE, label: "guía", hat: false },
-          { pos: SMITH, label: "espadero", art: smithUrl },
-        ].map(({ pos, label, hat, art }) => {
+          { pos: SMITH, label: "espadero", hat: true },
+        ].map(({ pos, label, hat }) => {
           const c = center(pos);
           return (
-            <div key={label} className={`game-npc${art ? " drawn" : ""}`} style={{ transform: `translate(${c.x}px, ${c.y}px)` }}>
-              {art ? <img className="game-person" src={art} alt={label} /> : <Person label={label} hat={hat} />}
+            <div key={label} className="game-npc" style={{ transform: `translate(${c.x}px, ${c.y}px)` }}>
+              <Person label={label} hat={hat} />
             </div>
           );
         })}
@@ -1088,8 +1089,9 @@ const Game = () => {
         />
       </div>
       {dialog && (
-        <div className="game-dialog" role="dialog" aria-live="polite" onPointerDown={() => keys.current.press?.()}>
-          <Illuminated text={dialog} />
+        <div className={`game-dialog${dialog.face ? " with-face" : ""}`} role="dialog" aria-live="polite" onPointerDown={() => keys.current.press?.()}>
+          {dialog.face && <img className="game-dialog-face" src={dialog.face} alt="" />}
+          <Illuminated text={dialog.text} />
           <span className="game-dialog-next">{touch ? "tocá" : "espacio"} ▸</span>
         </div>
       )}

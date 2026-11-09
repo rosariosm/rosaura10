@@ -513,12 +513,6 @@ button {
   width: 40px;
 }
 
-.game-npc.drawn {
-  top: -52px;
-  left: -26px;
-  width: 52px;
-}
-
 .game-person {
   display: block;
   width: 100%;
@@ -743,6 +737,20 @@ button {
   margin: 0;
 }
 
+.game-dialog.with-face {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding-left: 0.8rem;
+}
+
+.game-dialog-face {
+  width: 7.5rem;
+  border: 2px solid #7b7784;
+  border-radius: 4px;
+}
+
 .game-illuminated {
   font-family: "Grenze Gotisch", serif;
   font-size: 1.3rem;
@@ -949,6 +957,10 @@ img.game-initial {
 @media (max-aspect-ratio: 3/4) {
   .game-note {
     display: none;
+  }
+
+  .game-dialog-face {
+    width: 5rem;
   }
 
   .game-illuminated {
